@@ -18,4 +18,8 @@ Log in with
 
 
 ## Screenshots
-![login](./resources/img/login.png "Login")
+![login](./resources/img/login.jpg "Login")
+![accounts](./resources/img/accounts.jpg "Accounts")
+![account](./resources/img/account.png "Account")
+![transfers](./resources/img/transfers.png "Transfers")
+![transfers](./resources/img/transfers.png "Transfers")
