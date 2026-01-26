@@ -74,7 +74,7 @@ class AuthenticatedController extends AppController
      * Cake may provide something better here...
      */
     final protected function applyDefaultFilters(Query $query) : Query {
-        return $query->where(['user_id' => $this->User->id]);
+        return $query->where(['user_id' => $this->user->id]);
     }
 
 }
