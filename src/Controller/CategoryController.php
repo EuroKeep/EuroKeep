@@ -54,10 +54,10 @@ class CategoryController extends AuthenticatedController
         }
 
         $data = $this->request->getData();
-        $Table = $this->Category;
-        $entity = $Table->newEmptyEntity();
-        $entity = $Table->patchEntity($entity, $data);
-        $Table->save($entity);
+        $categoryTable = $this->Category;
+        $entity = $categoryTable->newEmptyEntity();
+        $entity = $categoryTable->patchEntity($entity, $data);
+        $categoryTable->save($entity);
 
         if ($entity->hasErrors()) {
             $this->response = $this->response->withStatus(400);

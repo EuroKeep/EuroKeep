@@ -59,10 +59,10 @@ class AccountController extends AuthenticatedController
         $data = $this->request->getData();
         $data['user_id'] = $this->user->id;
         $data['balance_value'] = 0;
-        $Table = $this->Account;
-        $entity = $Table->newEmptyEntity();
-        $entity = $Table->patchEntity($entity, $data);
-        $Table->save($entity);
+        $accountTable = $this->Account;
+        $entity = $accountTable->newEmptyEntity();
+        $entity = $accountTable->patchEntity($entity, $data);
+        $accountTable->save($entity);
 
         if ($entity->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -129,24 +129,23 @@ class AccountController extends AuthenticatedController
     {
         $this->request->allowMethod(['post', 'delete']);
         $account = $this->Account->get($id);
-        if ($this->Account->delete($account)) {
-        } else {
-        }
 
-        $this->viewBuilder()->setClassName("Json");
+        if (!$this->Account->delete($account)) {
+            $this->addError('Account not deleted.');
+        }
     }
 
     public function summarize($id = null): void
     {
         if($id) {
-            $Accounts = [$this->Account->find()->where(['id' => $id])->first()];
+            $accounts = [$this->Account->find()->where(['id' => $id])->first()];
         } else {
-            $Accounts = $this->Account->find()->all()->toArray();
+            $accounts = $this->Account->find()->all()->toArray();
         }
-        foreach ($Accounts as $Account) {
-            $Account->summarize();
+        foreach ($accounts as $account) {
+            $account->summarize();
         }
-        $this->set('accounts', $Accounts);
+        $this->set('accounts', $account);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['accounts', 'success']);
 

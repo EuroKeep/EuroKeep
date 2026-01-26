@@ -46,10 +46,10 @@ class MovementController extends AuthenticatedController
         $data = $this->request->getData();
         unset($data['created']);
         unset($data['modified']);
-        $Table = $this->Movement;
-        $entity = $Table->newEmptyEntity();
-        $entity = $Table->patchEntity($entity, $data);
-        $Table->save($entity);
+        $movementTable = $this->Movement;
+        $entity = $movementTable->newEmptyEntity();
+        $entity = $movementTable->patchEntity($entity, $data);
+        $movementTable->save($entity);
 
         if ($entity->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -68,9 +68,9 @@ class MovementController extends AuthenticatedController
             $data['transfer_id'] = $oldAccNowTransfer;
             $data['balance_value'] = -$data['balance_value'];
 
-            $entity = $Table->newEmptyEntity();
-            $entity = $Table->patchEntity($entity, $data);
-            $Table->save($entity);
+            $entity = $movementTable->newEmptyEntity();
+            $entity = $movementTable->patchEntity($entity, $data);
+            $movementTable->save($entity);
 
             if ($entity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -151,8 +151,8 @@ class MovementController extends AuthenticatedController
     public function stream(int $accountId)
     {
         /** @var $HostsTable AccountTable */
-        $AccountTable = TableRegistry::getTableLocator()->get('Account');
-        $account = $AccountTable->get($accountId);
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
+        $account = $accountTable->get($accountId);
         $start =  Chronos::createFromInterface(new \DateTime($this->request->getQueryParams()['start']))->startOfMonth();
         $end =  Chronos::createFromInterface(new \DateTime($this->request->getQueryParams()['end']))->startOfMonth();
 
@@ -191,39 +191,6 @@ class MovementController extends AuthenticatedController
         $this->set('account', $account);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['movements', 'account', 'success']);
-        $this->viewBuilder()->setClassName("Json");
-    }
-
-    public function mapping()
-    {
-        $this->set('success', true);
-        $this->viewBuilder()->setOption('serialize', ['success']);
-        $this->viewBuilder()->setClassName("Json");
-
-        if (!$this->request->is('post')) {
-            $this->set('errors', [
-                'Method is not allowed'
-            ]);
-            return;
-        }
-
-        $comment = $this->request->getData('comment', '');
-        if (empty($comment)) {
-            throw new \InvalidArgumentException('Comment cannot be empty');
-        }
-        /** @var CategoryMappingTable $CategoryMappingTable */
-        $CategoryMappingTable = TableRegistry::getTableLocator()->get('CategoryMapping');
-
-        try {
-            $categoryMapping = $CategoryMappingTable->mapComment($comment);
-            $CategoryTable = TableRegistry::getTableLocator()->get('Category');
-            $category = $CategoryTable->get($categoryMapping['category_id']);
-            $this->set('category', $category);
-        } catch (RecordNotFoundException) {
-            $this->set('success', false);
-        }
-
-        $this->viewBuilder()->setOption('serialize', ['success', 'category']);
         $this->viewBuilder()->setClassName("Json");
     }
 

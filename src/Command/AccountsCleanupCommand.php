@@ -38,26 +38,26 @@ class AccountsCleanupCommand extends Command
      */
     public function execute(Arguments $args, ConsoleIo $io)
     {
-        /** @var AccountTable $AccountTable */
-        $AccountTable = TableRegistry::getTableLocator()->get('Account');
-        $Accounts = $AccountTable->find();
+        /** @var AccountTable $accountTable */
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
+        $accounts = $accountTable->find();
 
         $MovementsTable = TableRegistry::getTableLocator()->get('Movement');
 
 
 
-        foreach ($Accounts as $Account) {
+        foreach ($accounts as $account) {
             $value = $MovementsTable
                 ->find()
                 ->where([
-                    'account_id' => $Account->get('id')
+                    'account_id' => $account->get('id')
                 ])
                 ->all()
                 ->sumOf('balance_value');
 
-            $Account->set('balance_value', $value);
+            $account->set('balance_value', $value);
 
-            $AccountTable->save($Account);
+            $account->save($account);
         }
     }
 }

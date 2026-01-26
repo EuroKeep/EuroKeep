@@ -65,8 +65,8 @@ class Account extends Entity
 
         $this->set('balance_value', $value);
 
-        /** @var AccountTable $AccountTable */
-        $AccountTable = TableRegistry::getTableLocator()->get('Account');
-        $AccountTable->save($this);
+        /** @var AccountTable $accountTable */
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
+        $accountTable->save($this);
     }
 }

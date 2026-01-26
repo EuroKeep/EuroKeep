@@ -51,8 +51,8 @@ class Movement extends Entity
 
     final public function getAccount(): Account
     {
-        /** @var AccountTable $AccountTable */
-        $AccountTable = TableRegistry::getTableLocator()->get('Account');
-        return $AccountTable->get($this->get('account_id'));
+        /** @var AccountTable $accountTable */
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
+        return $accountTable->get($this->get('account_id'));
     }
 }
