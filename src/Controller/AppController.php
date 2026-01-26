@@ -18,6 +18,7 @@ namespace eurokeep\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\EventInterface;
+use Cake\View\JsonView;
 
 /**
  * Application Controller
@@ -25,56 +26,53 @@ use Cake\Event\EventInterface;
  * Add your application-wide methods in the class below, your controllers
  * will inherit them.
  *
- * @link https://book.cakephp.org/4/en/controllers.html#the-app-controller
+ * @link https://book.cakephp.org/5/en/controllers.html#the-app-controller
  */
 class AppController extends Controller
 {
-    /**
-     * Initialization hook method.
-     *
-     * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('FormProtection');`
-     *
-     * @return void
-     */
+
     public function initialize(): void
     {
         parent::initialize();
 
-        $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
+        $this->loadComponent('Authentication.Authentication');
+    }
 
-        /*
-         * Enable the following component for recommended CakePHP form protection settings.
-         * see https://book.cakephp.org/4/en/controllers/components/form-protection.html
-         */
-        //$this->loadComponent('FormProtection');
+    public function viewClasses(): array
+    {
+        return [JsonView::class];
     }
 
     /**
-     * Add CSRF token to all .json requests
+     * @inheritDoc
+     *
+     * We always render JSON. There's no front-end here.
      */
-    public function beforeRender(EventInterface $event) {
-
-        $this->set('_csrfToken', $this->request->getAttribute('csrfToken'));
-        $serialize = $this->viewBuilder()->getOption('serialize');
-        if ($serialize === null) {
-            $serialize = [];
-        }
-        $serialize[] = '_csrfToken';
-        //Add Paginator info to json response
-        $paging = $this->viewBuilder()->getVar('paging');
-        if ($paging !== null) {
-            $serialize[] = 'paging';
+    public function beforeRender(EventInterface $event)
+    {
+        // Make sure that the success key is true if not defined.
+        if (!$this->has('success')) {
+            $this->set('success', true);
         }
 
-        //Add Scroll Paginator info to json response
-        $scroll = $this->viewBuilder()->getVar('scroll');
-        if ($scroll !== null) {
-            $serialize[] = 'scroll';
+        // Make sure the errors array exists, even if empty.
+        if (!$this->has('errors')) {
+            $this->set('errors', []);
         }
+        $serialize = $this->viewBuilder()->getOption('serialize') ?? ['success'];
+
         $this->viewBuilder()->setOption('serialize', $serialize);
+        $this->viewBuilder()->setClassName("Json");
+    }
+
+    final protected function has(string $key): bool {
+        return $this->viewBuilder()->hasVar($key);
+    }
+
+    final protected function addError(string $key, string $message): void {
+        $errors = $this->viewBuilder()->getVar($key);
+        $errors[$key] = $message;
+        $this->set('errors', $errors);
     }
 
 }
