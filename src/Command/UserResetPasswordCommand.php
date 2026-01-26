@@ -63,10 +63,10 @@ class UserResetPasswordCommand extends Command
         $password = $io->ask('Please enter the new password.');
         $password = trim($password);
 
-        $User = $mapping[$selection];
-        $usersTable->setPassword($User, $password);
+        $user = $mapping[$selection];
+        $usersTable->setPassword($user, $password);
 
-        $io->out("The password of user #{$User['id']}, {$User['email']} has been changed.");
+        $io->out("The password of user #{$user['id']}, {$user['email']} has been changed.");
         $io->out("That's all, folks.");
     }
 }

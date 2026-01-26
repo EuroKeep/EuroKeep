@@ -97,22 +97,22 @@ class UsersTable extends Table
 
     public function create(string $email, string $name, string $password) : User
     {
-        $User = $this->newEmptyEntity();
+        $user = $this->newEmptyEntity();
 
-        $User->email = $email;
-        $User->name = $name;
-        $User->password = $password;
+        $user->email = $email;
+        $user->name = $name;
+        $user->password = $password;
 
-        $this->save($User);
+        $this->save($user);
 
-        return $User;
+        return $user;
     }
 
-    public function setPassword(User $User, string $password) : void
+    public function setPassword(User $user, string $password) : void
     {
         // VERIFY COMPLEXITY
-        $User->password = $password;
-        $User->flags = 3; //Make this the binary operation!
-        $this->save($User);
+        $user->password = $password;
+        $user->flags = 3; //Make this the binary operation!
+        $this->save($user);
     }
 }
