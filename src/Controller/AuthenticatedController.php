@@ -56,7 +56,7 @@ class AuthenticatedController extends AppController
     }
 
     final protected function http401() : void {
-        header("HTTP/1.1 401 Forbidden");
+        header("HTTP/1.1 401 Unauthorized");
         exit(401);
     }
 
