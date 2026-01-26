@@ -29,6 +29,7 @@ use Cake\ORM\TableRegistry;
  */
 class AuthenticatedController extends AppController
 {
+    /** @var User I am the authenticated User */
     protected User $User;
 
     public function initialize(): void
