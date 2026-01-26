@@ -39,24 +39,24 @@ class UserResetPasswordCommand extends Command
      */
     public function execute(Arguments $args, ConsoleIo $io)
     {
-        /** @var UsersTable $UserTable */
-        $UserTable = TableRegistry::getTableLocator()->get('Users');
-        $Users = $UserTable->find()->toArray();
+        /** @var UsersTable $usersTable */
+        $usersTable = TableRegistry::getTableLocator()->get('Users');
+        $users = $usersTable->find()->toArray();
         $io->out("Select the user of your EuroKeep instance, whose password will be reset.");
 
         $mapping = [];
-        foreach($Users as $User) {
+        foreach($users as $user) {
             $io->out(sprintf(
                     '%s: %s (%s)',
-                    $User['id'],
-                    $User['name'],
-                    $User['email']
+                    $user['id'],
+                    $user['name'],
+                    $user['email']
                 )
             );
-            $mapping[$User['id']] = $User;
+            $mapping[$user['id']] = $user;
         }
 
-        $userIds = Hash::extract($Users, '{n}.id');
+        $userIds = Hash::extract($users, '{n}.id');
 
         $selection = $io->askChoice('Please select a user ID', $userIds);
 
@@ -64,7 +64,7 @@ class UserResetPasswordCommand extends Command
         $password = trim($password);
 
         $User = $mapping[$selection];
-        $UserTable->setPassword($User, $password);
+        $usersTable->setPassword($User, $password);
 
         $io->out("The password of user #{$User['id']}, {$User['email']} has been changed.");
         $io->out("That's all, folks.");

@@ -39,24 +39,24 @@ class UserDeleteCommand extends Command
      */
     public function execute(Arguments $args, ConsoleIo $io)
     {
-        /** @var UsersTable $UserTable */
-        $UserTable = TableRegistry::getTableLocator()->get('Users');
-        $Users = $UserTable->find()->toArray();
+        /** @var UsersTable $usersTable */
+        $usersTable = TableRegistry::getTableLocator()->get('Users');
+        $users = $usersTable->find()->toArray();
         $io->out("Select the user you want to remove from your EuroKeep instance");
 
         $mapping = [];
-        foreach($Users as $User) {
+        foreach($users as $user) {
             $io->out(sprintf(
                     '%s: %s (%s)',
-                    $User['id'],
-                    $User['name'],
-                    $User['email']
+                    $user['id'],
+                    $user['name'],
+                    $user['email']
                 )
             );
-            $mapping[$User['id']] = $User;
+            $mapping[$user['id']] = $user;
         }
 
-        $userIds = Hash::extract($Users, '{n}.id');
+        $userIds = Hash::extract($users, '{n}.id');
 
         $selection = $io->askChoice('Please select a user ID', $userIds);
 
@@ -64,16 +64,16 @@ class UserDeleteCommand extends Command
         $email = $io->ask('Please enter the user\' email address for sake of security.');
         $email = trim($email);
 
-        $User = $mapping[$selection];
+        $user = $mapping[$selection];
 
-        if ($email !== $User['email']) {
+        if ($email !== $user['email']) {
             $io->out("Seems you were wrong with the email address.");
             $io->out("That's all, folks.");
             exit(1);
         }
-        $UserTable->delete($User);
+        $usersTable->delete($user);
 
-        $io->out("The user #{$User['id']}, {$User['email']} has been deleted, including all accounts, movements, etc.");
+        $io->out("The user #{$user['id']}, {$user['email']} has been deleted, including all accounts, movements, etc.");
         $io->out("That's all, folks.");
     }
 }

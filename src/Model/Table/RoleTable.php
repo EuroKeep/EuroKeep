@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
 /**
  * Role Model
  *
- * @property \eurokeep\Model\Table\UsersTable&\Cake\ORM\Association\HasMany $User
+ * @property \eurokeep\Model\Table\UsersTable&\Cake\ORM\Association\HasMany $Users
  *
  * @method \eurokeep\Model\Entity\Role newEmptyEntity()
  * @method \eurokeep\Model\Entity\Role newEntity(array $data, array $options = [])

@@ -3,30 +3,16 @@ declare(strict_types=1);
 
 namespace eurokeep\Controller;
 
-use eurokeep\Model\Entity\User;
-use eurokeep\Model\Table\UsersTable;
-use Cake\Http\Session;
-use Cake\ORM\TableRegistry;
-
 /**
- * User Controller
+ * Auth Controller.
  *
- * @property \eurokeep\Model\Table\UsersTable $User
- * @method \eurokeep\Model\Entity\User[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * I handle logging in and out.
+ *
  */
 class AuthController extends AppController
 {
-    protected Session $Session;
-
-
     /**
-     * Initialization hook method.
-     *
-     * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('FormProtection');`
-     *
-     * @return void
+     * @inheritDoc
      */
     public function initialize(): void
     {
@@ -35,14 +21,17 @@ class AuthController extends AppController
         $this->Authentication->allowUnauthenticated(['login']);
     }
 
+    /**
+     * I handle the login.
+     */
     public function login(): void {
         $result = $this->Authentication->getResult();
 
         $errors = [];
         if($result && $result->isValid()) {
-            $User = $result->getData();
+            $user = $result->getData();
             $this->set('success', true);
-            $this->set('user', $User);
+            $this->set('user', $user);
         } else {
             $this->set('success', false);
             $errors[] = 'User authentication failed';
@@ -53,9 +42,12 @@ class AuthController extends AppController
         $this->viewBuilder()->setClassName("Json");
     }
 
+    /**
+     * I handle the logout.
+     */
     public function logout(): void {
         $this->Authentication->logout();
         header("Location: /a/login");
-        exit(200);
+        exit(302);
     }
 }

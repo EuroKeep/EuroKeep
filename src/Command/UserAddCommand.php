@@ -49,11 +49,11 @@ class UserAddCommand extends Command
         $password = $io->ask('Please enter the password.');
         $password = trim($password);
 
-        /** @var UsersTable $UserTable */
-        $UserTable = TableRegistry::getTableLocator()->get('Users');
-        $User = $UserTable->create($email, $name, $password);
+        /** @var UsersTable $usersTable */
+        $usersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $usersTable->create($email, $name, $password);
 
-        $io->out("User #{$User['id']}, {$User['email']} was created.");
+        $io->out("User #{$user['id']}, {$user['email']} was created.");
 
         // @todo fetch host name from environment / config.
         $io->out("When logging in to https://eurokeep.nox.kiwi/ the user will have to reset the password.");

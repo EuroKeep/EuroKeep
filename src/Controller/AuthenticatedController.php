@@ -19,6 +19,7 @@ namespace eurokeep\Controller;
 use eurokeep\Model\Entity\User;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use eurokeep\Model\Table\UsersTable;
 
 /**
  * I am an arbitrary Controller that makes sure a logged +in user is found.
@@ -28,7 +29,7 @@ use Cake\ORM\TableRegistry;
 class AuthenticatedController extends AppController
 {
     /** @var User I am the authenticated User */
-    protected User $User;
+    protected User $user;
 
     /**
      * @inheritDoc
@@ -40,10 +41,11 @@ class AuthenticatedController extends AppController
         $result = $this->Authentication->getResult();
 
         if($result && $result->isValid()) {
-            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            // Force-Load the user from the Database to verify that the entry is still there.
             try {
-                // Force-Load the user from the Database to verify that the entry is still there.
-                $this->User = $UsersTable->get($result->getData()->id);
+                /** @var UsersTable $usersTable */
+                $usersTable = TableRegistry::getTableLocator()->get('Users');
+                $this->user = $usersTable->get($result->getData()->id);
             } catch (\Throwable $exception) {
                 $this->http401();
             }
