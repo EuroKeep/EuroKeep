@@ -6,6 +6,8 @@ namespace eurokeep\Model\Table;
 use eurokeep\Model\Entity\Movement;
 use ArrayObject;
 use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query\SelectQuery;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -14,17 +16,17 @@ use Cake\Validation\Validator;
  *
  * @method \eurokeep\Model\Entity\Movement newEmptyEntity()
  * @method \eurokeep\Model\Entity\Movement newEntity(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement[] newEntities(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement get($primaryKey, $options = [])
- * @method \eurokeep\Model\Entity\Movement findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method array<\eurokeep\Model\Entity\Movement> newEntities(array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Movement get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method \eurokeep\Model\Entity\Movement findOrCreate($search, ?callable $callback = null, array $options = [])
  * @method \eurokeep\Model\Entity\Movement patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Movement saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
+ * @method array<\eurokeep\Model\Entity\Movement> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Movement|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method \eurokeep\Model\Entity\Movement saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement>|false saveMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement> saveManyOrFail(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement>|false deleteMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement> deleteManyOrFail(iterable $entities, array $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -33,7 +35,7 @@ class MovementTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param array<string, mixed> $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config): void
@@ -46,6 +48,10 @@ class MovementTable extends Table
 
         $this->addBehavior('Timestamp');
 
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id',
+            'joinType' => 'INNER',
+        ]);
         $this->belongsTo('Category', [
             'foreignKey' => 'category_id',
         ]);
@@ -89,18 +95,27 @@ class MovementTable extends Table
 
         $validator
             ->integer('user_id')
-            ->requirePresence('user_id', 'create')
             ->notEmptyString('user_id');
 
         $validator
             ->integer('transfer_id')
             ->allowEmptyString('transfer_id');
 
-        $validator
-            ->integer('piggybank_id')
-            ->allowEmptyString('piggybank_id');
-
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
+        $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
+
+        return $rules;
     }
 
     /**
