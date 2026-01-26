@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
-use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
+use eurokeep\Model\Entity\Movement;
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -85,5 +86,41 @@ class MovementTable extends Table
             ->notEmptyString('account_id');
 
         return $validator;
+    }
+
+    /**
+     * Overridden to automatically refresh the balance of the affected Account when a Movement is created or modified.
+     *
+     * @param Movement $entity
+     * @param ArrayObject $options
+     * @return bool
+     */
+    protected function _onSaveSuccess(EntityInterface $entity, ArrayObject $options): bool
+    {
+        if (!parent::_onSaveSuccess($entity, $options)) {
+            return false;
+        }
+
+        $entity->getAccount()->summarize();
+
+        return true;
+    }
+
+    /**
+     * Overridden to automatically refresh the balance of the affected Account when a Movement is deleted.
+     *
+     * @param Movement $entity
+     * @param $options
+     * @return bool
+     */
+    public function delete(EntityInterface $entity, $options = []): bool
+    {
+        if (!parent::delete($entity, $options)) {
+            return false;
+        }
+
+        $entity->getAccount()->summarize();
+
+        return true;
     }
 }

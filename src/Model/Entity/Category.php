@@ -9,12 +9,12 @@ use Cake\ORM\Entity;
  * Category Entity
  *
  * @property int $id
- * @property \Cake\I18n\FrozenTime|null $created
- * @property \Cake\I18n\FrozenTime|null $modified
+ * @property \Cake\I18n\DateTime|null $created
+ * @property \Cake\I18n\DateTime|null $modified
  * @property int $flags
  * @property string $emoji
  * @property string $name
- * @property int|null $parent_category_id
+ * @property int $parent_category_id
  *
  * @property \eurokeep\Model\Entity\Movement[] $movement
  */

@@ -19,7 +19,6 @@ use Cake\ORM\TableRegistry;
  * @property int|null $category_id
  * @property int $account_id
  *
- * @property \eurokeep\Model\Entity\User $user
  * @property \eurokeep\Model\Entity\Category $category
  * @property \eurokeep\Model\Entity\Account $account
  */
