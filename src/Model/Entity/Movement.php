@@ -11,18 +11,16 @@ use Cake\ORM\TableRegistry;
  * Movement Entity
  *
  * @property int $id
- * @property \Cake\I18n\FrozenTime|null $created
- * @property \Cake\I18n\FrozenTime|null $modified
+ * @property \Cake\I18n\DateTime|null $created
+ * @property \Cake\I18n\DateTime|null $modified
  * @property int $flags
- * @property float $balance_value
+ * @property string $balance_value
  * @property string $comment
  * @property int|null $category_id
  * @property int $account_id
- * @property int $user_id
- * @property int|null $transfer_id
- * @property int|null $piggybank_id
  *
  * @property \eurokeep\Model\Entity\Category $category
+ * @property \eurokeep\Model\Entity\Account $account
  */
 class Movement extends Entity
 {
@@ -43,10 +41,8 @@ class Movement extends Entity
         'comment' => true,
         'category_id' => true,
         'account_id' => true,
-        'user_id' => true,
-        'transfer_id' => true,
         'category' => true,
-        'piggybank_id' => true
+        'account' => true,
     ];
 
     final public function getAccount(): Account

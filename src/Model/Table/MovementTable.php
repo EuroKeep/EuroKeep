@@ -14,17 +14,17 @@ use Cake\Validation\Validator;
  *
  * @method \eurokeep\Model\Entity\Movement newEmptyEntity()
  * @method \eurokeep\Model\Entity\Movement newEntity(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement[] newEntities(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement get($primaryKey, $options = [])
- * @method \eurokeep\Model\Entity\Movement findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method array<\eurokeep\Model\Entity\Movement> newEntities(array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Movement get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method \eurokeep\Model\Entity\Movement findOrCreate($search, ?callable $callback = null, array $options = [])
  * @method \eurokeep\Model\Entity\Movement patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Movement|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Movement saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
+ * @method array<\eurokeep\Model\Entity\Movement> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Movement|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method \eurokeep\Model\Entity\Movement saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement>|false saveMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement> saveManyOrFail(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement>|false deleteMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Movement>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Movement> deleteManyOrFail(iterable $entities, array $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -33,7 +33,7 @@ class MovementTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param array<string, mixed> $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config): void
@@ -45,7 +45,6 @@ class MovementTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
-
         $this->belongsTo('Category', [
             'foreignKey' => 'category_id',
         ]);
@@ -79,26 +78,12 @@ class MovementTable extends Table
 
         $validator
             ->integer('category_id')
-            ->requirePresence('category_id', 'create')
-            ->greaterThan('category_id', 0);
+            ->allowEmptyString('category_id');
 
         $validator
             ->integer('account_id')
             ->requirePresence('account_id', 'create')
             ->notEmptyString('account_id');
-
-        $validator
-            ->integer('user_id')
-            ->requirePresence('user_id', 'create')
-            ->notEmptyString('user_id');
-
-        $validator
-            ->integer('transfer_id')
-            ->allowEmptyString('transfer_id');
-
-        $validator
-            ->integer('piggybank_id')
-            ->allowEmptyString('piggybank_id');
 
         return $validator;
     }

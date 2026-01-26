@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -15,17 +13,17 @@ use Cake\Validation\Validator;
  *
  * @method \eurokeep\Model\Entity\Category newEmptyEntity()
  * @method \eurokeep\Model\Entity\Category newEntity(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Category[] newEntities(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Category get($primaryKey, $options = [])
- * @method \eurokeep\Model\Entity\Category findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method array<\eurokeep\Model\Entity\Category> newEntities(array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Category get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method \eurokeep\Model\Entity\Category findOrCreate($search, ?callable $callback = null, array $options = [])
  * @method \eurokeep\Model\Entity\Category patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Category[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Category|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Category saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Category[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Category[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Category[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Category[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
+ * @method array<\eurokeep\Model\Entity\Category> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Category|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method \eurokeep\Model\Entity\Category saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Category>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Category>|false saveMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Category>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Category> saveManyOrFail(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Category>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Category>|false deleteMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Category>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Category> deleteManyOrFail(iterable $entities, array $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -34,7 +32,7 @@ class CategoryTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param array<string, mixed> $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config): void
@@ -48,12 +46,6 @@ class CategoryTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->hasMany('Movement', [
-            'foreignKey' => 'category_id',
-            'dependent' => true,
-            'cascadeCallbacks' => true,
-        ]);
-
-        $this->hasMany('Budget', [
             'foreignKey' => 'category_id',
             'dependent' => true,
             'cascadeCallbacks' => true,

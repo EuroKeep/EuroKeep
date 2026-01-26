@@ -9,12 +9,12 @@ use Cake\ORM\Entity;
  * Role Entity
  *
  * @property int $id
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property \Cake\I18n\DateTime $created
+ * @property \Cake\I18n\DateTime $modified
  * @property int $flags
  * @property string $name
  *
- * @property \eurokeep\Model\Entity\User[] $user
+ * @property \eurokeep\Model\Entity\User[] $users
  */
 class Role extends Entity
 {
@@ -32,6 +32,6 @@ class Role extends Entity
         'modified' => true,
         'flags' => true,
         'name' => true,
-        'user' => true,
+        'users' => true,
     ];
 }

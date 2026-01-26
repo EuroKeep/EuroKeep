@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -11,19 +11,21 @@ use Cake\Validation\Validator;
 /**
  * Accounttype Model
  *
+ * @property \eurokeep\Model\Table\AccountTable&\Cake\ORM\Association\HasMany $Account
+ *
  * @method \eurokeep\Model\Entity\Accounttype newEmptyEntity()
  * @method \eurokeep\Model\Entity\Accounttype newEntity(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype[] newEntities(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype get($primaryKey, $options = [])
- * @method \eurokeep\Model\Entity\Accounttype findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method array<\eurokeep\Model\Entity\Accounttype> newEntities(array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Accounttype get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method \eurokeep\Model\Entity\Accounttype findOrCreate($search, ?callable $callback = null, array $options = [])
  * @method \eurokeep\Model\Entity\Accounttype patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Accounttype saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \eurokeep\Model\Entity\Accounttype[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Accounttype[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Accounttype[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \eurokeep\Model\Entity\Accounttype[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
+ * @method array<\eurokeep\Model\Entity\Accounttype> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \eurokeep\Model\Entity\Accounttype|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method \eurokeep\Model\Entity\Accounttype saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype>|false saveMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype> saveManyOrFail(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype>|false deleteMany(iterable $entities, array $options = [])
+ * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype> deleteManyOrFail(iterable $entities, array $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -32,7 +34,7 @@ class AccounttypeTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param array<string, mixed> $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config): void
@@ -44,7 +46,6 @@ class AccounttypeTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
-
 
         $this->hasMany('Account', [
             'foreignKey' => 'accounttype_id',

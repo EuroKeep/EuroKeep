@@ -164,7 +164,7 @@ class Accounting extends AbstractMigration
                 ->addColumn('parent_category_id', 'integer', [
                     'default' => null,
                     'limit'   => 11,
-                    'null'    => true,
+                    'null'    => false,
                 ])
                 ->create();
         }
@@ -214,16 +214,6 @@ class Accounting extends AbstractMigration
                     'default' => null,
                     'limit'   => 11,
                     'null'    => false,
-                ])
-                ->addColumn('user_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addColumn('transfer_id', 'integer', [
-                    'default' => null,
-                    'limit' => 10,
-                    'null' => true,
                 ])
                 ->create();
         }
