@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use Migrations\AbstractMigration;
 
-class Initial extends AbstractMigration
+class Users extends AbstractMigration
 {
 
 
@@ -17,7 +17,7 @@ class Initial extends AbstractMigration
      *
      * @var bool
      */
-    public $autoId = false;
+    public bool $autoId = false;
 
 
     /**
@@ -97,7 +97,7 @@ class Initial extends AbstractMigration
                     'limit' => 128,
                     'null' => false,
                 ])
-                ->addColumn('password', 'float', [
+                ->addColumn('password', 'string', [
                     'default' => null,
                     'limit' => 128,
                     'null' => false,
