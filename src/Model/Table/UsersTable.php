@@ -95,12 +95,6 @@ class UsersTable extends Table
         return $validator;
     }
 
-    public function findUser(string $email) : User {
-        return $this->find()->where([
-            'email' => $email,
-        ])->firstOrFail();
-    }
-
     public function create(string $email, string $name, string $password) : User
     {
         $User = $this->newEmptyEntity();

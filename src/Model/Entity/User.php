@@ -61,28 +61,6 @@ class User extends Entity
         return $hasher->hash($password);
     }
 
-    final public function authenticate(string $password) : void {
-        if (($this->flags & 1) !== 1) {
-            throw new \Exception('User is not activated');
-        }
-        if (($this->flags & 2) === 2) {
-
-           // throw new \Exception('Password change required');
-        }
-
-        // Use to create new user.
-#        die(password_hash($password, PASSWORD_DEFAULT));
-
-        if (! password_verify($password, $this->password)) {
-            throw new \Exception('Password wrong');
-        }
-
-        // TODO Store last login date.
-
-        // TODO Create session
-        return;
-    }
-
     final public function getTotalBalances() : array {
         /** @var AccountTable $AccountTable */
         $AccountTable = TableRegistry::getTableLocator()->get('Account');
