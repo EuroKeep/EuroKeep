@@ -9,6 +9,7 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
+use eurokeep\Model\Table\MovementTable;
 
 /**
  * AccountsCleanup command.
@@ -42,12 +43,10 @@ class AccountsCleanupCommand extends Command
         $accountTable = TableRegistry::getTableLocator()->get('Account');
         $accounts = $accountTable->find();
 
-        $MovementsTable = TableRegistry::getTableLocator()->get('Movement');
-
-
-
+        /** @var MovementTable $movementTable */
+        $movementTable = TableRegistry::getTableLocator()->get('Movement');
         foreach ($accounts as $account) {
-            $value = $MovementsTable
+            $value = $movementTable
                 ->find()
                 ->where([
                     'account_id' => $account->get('id')

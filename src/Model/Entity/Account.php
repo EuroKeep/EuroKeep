@@ -53,9 +53,9 @@ class Account extends Entity
      */
     public function summarize(): void
     {
-        /** @var MovementTable $MovementsTable */
-        $MovementsTable = TableRegistry::getTableLocator()->get('Movement');
-        $value = $MovementsTable
+        /** @var MovementTable $movementTable */
+        $movementTable = TableRegistry::getTableLocator()->get('Movement');
+        $value = $movementTable
             ->find()
             ->where([
                 'account_id' => $this->get('id')

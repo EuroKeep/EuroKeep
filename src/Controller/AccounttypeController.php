@@ -95,9 +95,8 @@ class AccounttypeController extends AuthenticatedController
     {
         $this->request->allowMethod(['post', 'delete']);
         $accounttype = $this->Accounttype->get($id);
-        if ($this->Accounttype->delete($accounttype)) {
-        } else {
-            $this->set('success', 'false');
+        if (! $this->Accounttype->delete($accounttype)) {
+            $this->addError('Account type not deleted');
         }
 
         return $this->redirect(['action' => 'index']);

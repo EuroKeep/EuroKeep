@@ -153,8 +153,6 @@ class MovementController extends AuthenticatedController
         /** @var $HostsTable AccountTable */
         $accountTable = TableRegistry::getTableLocator()->get('Account');
         $account = $accountTable->get($accountId);
-        $start =  Chronos::createFromInterface(new \DateTime($this->request->getQueryParams()['start']))->startOfMonth();
-        $end =  Chronos::createFromInterface(new \DateTime($this->request->getQueryParams()['end']))->startOfMonth();
 
         $start = new \DateTime($this->request->getQueryParams()['start']);
         $end = new \DateTime($this->request->getQueryParams()['end']);
