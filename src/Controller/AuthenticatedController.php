@@ -16,9 +16,7 @@ declare(strict_types=1);
  */
 namespace eurokeep\Controller;
 
-use Authentication\Authenticator\Result;
 use eurokeep\Model\Entity\User;
-use eurokeep\Model\Table\UsersTable;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 
@@ -32,6 +30,9 @@ class AuthenticatedController extends AppController
     /** @var User I am the authenticated User */
     protected User $User;
 
+    /**
+     * @inheritDoc
+     */
     public function initialize(): void
     {
         parent::initialize();
@@ -51,16 +52,25 @@ class AuthenticatedController extends AppController
         }
     }
 
+    /**
+     * I am the overall method to return HTTP403
+     */
     final protected function http403() : void {
         header("HTTP/1.1 403 Forbidden");
         exit(403);
     }
 
+    /**
+     * I am the overall method to return HTTP401
+     */
     final protected function http401() : void {
         header("HTTP/1.1 401 Unauthorized");
         exit(401);
     }
 
+    /**
+     * Cake may provide something better here...
+     */
     final protected function applyDefaultFilters(Query $query) : Query {
         return $query->where(['user_id' => $this->User->id]);
     }
