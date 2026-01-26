@@ -62,11 +62,11 @@ class User extends Entity
     }
 
     final public function getTotalBalances() : array {
-        /** @var AccountTable $AccountTable */
-        $AccountTable = TableRegistry::getTableLocator()->get('Account');
+        /** @var AccountTable $accountTable */
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
 
         // Full Balance
-        $qry = $AccountTable->find();
+        $qry = $accountTable->find();
         $qry->where(['user_id' => $this->id])
             ->select([
                 'balance_currency',
