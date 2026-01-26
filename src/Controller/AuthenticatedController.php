@@ -38,7 +38,13 @@ class AuthenticatedController extends AppController
         $result = $this->Authentication->getResult();
 
         if($result && $result->isValid()) {
-            $this->User = $result->getData();
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            try {
+                // Force-Load the user from the Database to verify that the entry is still there.
+                $this->User = $UsersTable->get($result->getData()->id);
+            } catch (\Throwable $exception) {
+                $this->http401();
+            }
         } else {
             $this->http401();
         }
