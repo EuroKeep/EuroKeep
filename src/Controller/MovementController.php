@@ -221,8 +221,8 @@ class MovementController extends AuthenticatedController
     {
         $this->request->allowMethod(['post', 'delete']);
         $movement = $this->Movement->get($id);
-        if ($this->Movement->delete($movement)) {
-        } else {
+        if (! $this->Movement->delete($movement)) {
+            $this->addError('Movement not deleted');
         }
     }
 }
