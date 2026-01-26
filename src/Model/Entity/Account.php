@@ -12,16 +12,20 @@ use Cake\ORM\TableRegistry;
  * Account Entity
  *
  * @property int $id
- * @property \Cake\I18n\FrozenTime|null $created
- * @property \Cake\I18n\FrozenTime|null $modified
+ * @property \Cake\I18n\DateTime|null $created
+ * @property \Cake\I18n\DateTime|null $modified
  * @property int $flags
  * @property string $name
  * @property string $emoji
  * @property string $iban
- * @property float $balance_value
+ * @property string $balance_value
  * @property string $balance_currency
  * @property int $accounttype_id
  * @property int $user_id
+ *
+ * @property \eurokeep\Model\Entity\Accounttype $accounttype
+ * @property \eurokeep\Model\Entity\Movement[] $movement
+ * @property \eurokeep\Model\Entity\User $user
  */
 class Account extends Entity
 {
@@ -45,6 +49,9 @@ class Account extends Entity
         'balance_currency' => true,
         'accounttype_id' => true,
         'user_id' => true,
+        'accounttype' => true,
+        'movement' => true,
+        'user' => true,
     ];
 
     /**

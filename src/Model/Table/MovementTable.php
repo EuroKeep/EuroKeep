@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
-use eurokeep\Model\Entity\Movement;
-use ArrayObject;
-use Cake\Datasource\EntityInterface;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -47,11 +44,6 @@ class MovementTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
-
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER',
-        ]);
         $this->belongsTo('Category', [
             'foreignKey' => 'category_id',
         ]);
@@ -85,72 +77,13 @@ class MovementTable extends Table
 
         $validator
             ->integer('category_id')
-            ->requirePresence('category_id', 'create')
-            ->greaterThan('category_id', 0);
+            ->allowEmptyString('category_id');
 
         $validator
             ->integer('account_id')
             ->requirePresence('account_id', 'create')
             ->notEmptyString('account_id');
 
-        $validator
-            ->integer('user_id')
-            ->notEmptyString('user_id');
-
-        $validator
-            ->integer('transfer_id')
-            ->allowEmptyString('transfer_id');
-
         return $validator;
-    }
-
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(RulesChecker $rules): RulesChecker
-    {
-        $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
-
-        return $rules;
-    }
-
-    /**
-     * Overridden to automatically refresh the balance of the affected Account when a Movement is created or modified.
-     *
-     * @param Movement $entity
-     * @param ArrayObject $options
-     * @return bool
-     */
-    protected function _onSaveSuccess(EntityInterface $entity, ArrayObject $options): bool
-    {
-        if (!parent::_onSaveSuccess($entity, $options)) {
-            return false;
-        }
-
-        $entity->getAccount()->summarize();
-
-        return true;
-    }
-
-    /**
-     * Overridden to automatically refresh the balance of the affected Account when a Movement is deleted.
-     *
-     * @param Movement $entity
-     * @param $options
-     * @return bool
-     */
-    public function delete(EntityInterface $entity, $options = []): bool
-    {
-        if (!parent::delete($entity, $options)) {
-            return false;
-        }
-
-        $entity->getAccount()->summarize();
-
-        return true;
     }
 }

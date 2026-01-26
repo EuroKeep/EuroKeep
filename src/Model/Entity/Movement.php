@@ -18,9 +18,8 @@ use Cake\ORM\TableRegistry;
  * @property string $comment
  * @property int|null $category_id
  * @property int $account_id
- * @property int $user_id
- * @property int|null $transfer_id
  *
+ * @property \eurokeep\Model\Entity\User $user
  * @property \eurokeep\Model\Entity\Category $category
  * @property \eurokeep\Model\Entity\Account $account
  */
@@ -43,8 +42,6 @@ class Movement extends Entity
         'comment' => true,
         'category_id' => true,
         'account_id' => true,
-        'user_id' => true,
-        'transfer_id' => true,
         'category' => true,
         'account' => true,
     ];
