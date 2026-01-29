@@ -39,7 +39,6 @@ class AuthController extends AppController
 
         $this->set('errors', $errors);
         $this->viewBuilder()->setOption('serialize', ['user', 'success', 'errors']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**

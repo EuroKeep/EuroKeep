@@ -32,10 +32,7 @@ class AccountController extends AuthenticatedController
 
         $this->set('totalBalances', $this->user->getTotalBalances());
         $this->set('items', $account);
-        $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['items', 'success', 'totalBalances']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
@@ -47,7 +44,6 @@ class AccountController extends AuthenticatedController
     {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-        $this->viewBuilder()->setClassName("Json");
 
         if (!$this->request->is('post')) {
             $this->set('errors', [
@@ -72,7 +68,6 @@ class AccountController extends AuthenticatedController
         }
         $this->set('account', $entity);
         $this->viewBuilder()->setOption('serialize', ['success', 'account']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
@@ -106,16 +101,21 @@ class AccountController extends AuthenticatedController
         $account = $this->Account->get($id, [
             'contain' => [],
         ]);
+        $entity = $this->Account->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $account = $this->Account->patchEntity($account, $this->request->getData());
-            if ($this->Account->save($account)) {
+            $entity = $this->Account->patchEntity($entity, $this->request->getData());
 
-                $this->viewBuilder()->setClassName("Json");
+            if ($entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $entity->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+            if (!$this->Account->save($entity)) {
+                $this->set('success', false);
             }
         }
         $this->set(compact('account'));
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
@@ -148,7 +148,5 @@ class AccountController extends AuthenticatedController
         $this->set('accounts', $account);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['accounts', 'success']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 }

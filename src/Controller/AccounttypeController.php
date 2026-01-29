@@ -24,8 +24,6 @@ class AccounttypeController extends AuthenticatedController
         $this->set('items', $accounttypes);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['items', 'success', 'accounttypes', 'items']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**

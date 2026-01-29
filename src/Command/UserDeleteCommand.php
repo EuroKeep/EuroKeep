@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace eurokeep\Command;
 
-use eurokeep\Model\Table\UsersTable;
 use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use eurokeep\Model\Table\UsersTable;
 
 /**
  * UserDelete command.

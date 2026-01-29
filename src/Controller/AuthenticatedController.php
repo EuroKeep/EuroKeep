@@ -16,9 +16,9 @@ declare(strict_types=1);
  */
 namespace eurokeep\Controller;
 
-use eurokeep\Model\Entity\User;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use eurokeep\Model\Entity\User;
 use eurokeep\Model\Table\UsersTable;
 
 /**

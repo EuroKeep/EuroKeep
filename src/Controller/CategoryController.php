@@ -31,8 +31,6 @@ class CategoryController extends AuthenticatedController
         $this->set('categorys', $category);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['categorys', 'success']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 
 }

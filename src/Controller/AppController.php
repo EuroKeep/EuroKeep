@@ -31,6 +31,10 @@ use Cake\View\JsonView;
 class AppController extends Controller
 {
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function initialize(): void
     {
         parent::initialize();
@@ -62,7 +66,7 @@ class AppController extends Controller
         $serialize = $this->viewBuilder()->getOption('serialize') ?? ['success'];
 
         $this->viewBuilder()->setOption('serialize', $serialize);
-        $this->viewBuilder()->setClassName("Json");
+        $this->viewBuilder()->setClassName('Json');
     }
 
     final protected function has(string $key): bool {

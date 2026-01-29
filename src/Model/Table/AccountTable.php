@@ -91,8 +91,7 @@ class AccountTable extends Table
         $validator
             ->scalar('iban')
             ->maxLength('iban', 50)
-            ->requirePresence('iban', 'create')
-            ->notEmptyString('iban');
+            ->allowEmptyString('iban');
 
         $validator
             ->decimal('balance_value')

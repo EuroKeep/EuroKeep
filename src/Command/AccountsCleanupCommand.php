@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace eurokeep\Command;
 
-use eurokeep\Model\Table\AccountTable;
 use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
+use eurokeep\Model\Table\AccountTable;
 use eurokeep\Model\Table\MovementTable;
+use Override;
 
 /**
  * AccountsCleanup command.
@@ -23,6 +24,7 @@ class AccountsCleanupCommand extends Command
      * @param \Cake\Console\ConsoleOptionParser $parser The parser to be defined
      * @return \Cake\Console\ConsoleOptionParser The built parser.
      */
+    #[Override]
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser
     {
         $parser = parent::buildOptionParser($parser);

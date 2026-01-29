@@ -3,11 +3,8 @@ declare(strict_types=1);
 
 namespace eurokeep\Controller;
 
-use eurokeep\Model\Table\AccountTable;
-use eurokeep\Model\Table\CategoryMappingTable;
-use Cake\Chronos\Chronos;
-use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
+use eurokeep\Model\Table\AccountTable;
 
 /**
  * Movement Controller
@@ -34,7 +31,6 @@ class MovementController extends AuthenticatedController
     {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-        $this->viewBuilder()->setClassName("Json");
 
         if (!$this->request->is('post')) {
             $this->set('errors', [
@@ -83,7 +79,6 @@ class MovementController extends AuthenticatedController
 
         $this->set('movement', $entity);
         $this->viewBuilder()->setOption('serialize', ['success', 'movement']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
@@ -97,7 +92,6 @@ class MovementController extends AuthenticatedController
     {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-        $this->viewBuilder()->setClassName("Json");
 
         $entity = $this->Movement->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -115,7 +109,6 @@ class MovementController extends AuthenticatedController
         }
         $this->set('movement', $entity);
         $this->viewBuilder()->setOption('serialize', ['success', 'movement']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
@@ -139,14 +132,12 @@ class MovementController extends AuthenticatedController
         $this->set('movements', $movements);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['movements', 'success']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
-     * stream method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
+     * @param int $accountId
+     * @return void
+     * @throws \DateMalformedStringException
      */
     public function stream(int $accountId)
     {
@@ -189,7 +180,6 @@ class MovementController extends AuthenticatedController
         $this->set('account', $account);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['movements', 'account', 'success']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
@@ -206,6 +196,7 @@ class MovementController extends AuthenticatedController
         ]);
 
         $this->set(compact('movement'));
+        $this->viewBuilder()->setOption('serialize', ['movement']);
     }
 
     /**
