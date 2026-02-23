@@ -16,6 +16,7 @@ declare(strict_types=1);
  */
 namespace eurokeep\Controller;
 
+use Override;
 use Cake\Controller\Controller;
 use Cake\Event\EventInterface;
 use Cake\View\JsonView;
@@ -32,9 +33,10 @@ class AppController extends Controller
 {
 
     /**
-     * @return void
-     * @throws \Exception
+     * @inheritDoc
+     * @throws
      */
+    #[Override]
     public function initialize(): void
     {
         parent::initialize();
@@ -42,9 +44,14 @@ class AppController extends Controller
         $this->loadComponent('Authentication.Authentication');
     }
 
+    /**
+     * @inheritDoc
+     */
+    #[Override]
     public function viewClasses(): array
     {
-        return [JsonView::class];
+        $this->viewClasses = [JsonView::class];
+        return parent::viewClasses();
     }
 
     /**
@@ -52,7 +59,8 @@ class AppController extends Controller
      *
      * We always render JSON. There's no front-end here.
      */
-    public function beforeRender(EventInterface $event)
+    #[Override]
+    public function beforeRender(EventInterface $event): void
     {
         // Make sure that the success key is true if not defined.
         if (!$this->has('success')) {
@@ -67,12 +75,24 @@ class AppController extends Controller
 
         $this->viewBuilder()->setOption('serialize', $serialize);
         $this->viewBuilder()->setClassName('Json');
+
+        parent::beforeRender($event);
     }
 
+    /**
+     * I will verify if the viewBuilder has the given $key.
+     * @param string $key The key you want to check for.
+     * @return bool  Whether the $key is part of the viewBuilder.
+     */
     final protected function has(string $key): bool {
         return $this->viewBuilder()->hasVar($key);
     }
 
+    /**
+     *  I will add a new error with the given $key and $message to the ViewBuilder.
+     * @param string $key     The key for the error message. May be a field name, etc.
+     * @param string $message The actual error message that.
+     */
     final protected function addError(string $key, string $message): void {
         $errors = $this->viewBuilder()->getVar($key);
         $errors[$key] = $message;

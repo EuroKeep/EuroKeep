@@ -31,6 +31,7 @@ use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\Router;
+use Override;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -46,6 +47,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      *
      * @return void
      */
+    #[Override]
     public function bootstrap(): void
     {
         // Call parent to load bootstrap from files.
@@ -77,9 +79,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     /**
      * Setup the middleware queue your application will use.
      *
-     * @param \Cake\Http\MiddlewareQueue $middlewareQueue The middleware queue to setup.
-     * @return \Cake\Http\MiddlewareQueue The updated middleware queue.
+     * @param MiddlewareQueue $middlewareQueue The middleware queue to setup.
+     * @return MiddlewareQueue The updated middleware queue.
      */
+    #[Override]
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
         $middlewareQueue
@@ -104,10 +107,11 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     /**
      * Register application container services.
      *
-     * @param \Cake\Core\ContainerInterface $container The Container to update.
+     * @param ContainerInterface $container The Container to update.
      * @return void
      * @link https://book.cakephp.org/4/en/development/dependency-injection.html#dependency-injection
      */
+    #[Override]
     public function services(ContainerInterface $container): void
     {
     }
@@ -128,6 +132,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         // Load more plugins here
     }
 
+    #[Override]
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {
         $authenticationService = new AuthenticationService([

@@ -3,41 +3,49 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
-use Cake\ORM\Query\SelectQuery;
+use Cake\Datasource\EntityInterface;
+use Cake\Datasource\ResultSetInterface;
+use Cake\ORM\Association\BelongsTo;
+use Cake\ORM\Association\HasMany;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Closure;
+use eurokeep\Model\Behavior\UserOwnedBehavior;
+use eurokeep\Model\Entity\Account;
+use Override;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Account Model
  *
- * @property \eurokeep\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
- * @property \eurokeep\Model\Table\MovementTable&\Cake\ORM\Association\HasMany $Movement
+ * @property UsersTable&BelongsTo $Users
+ * @property MovementTable&HasMany $Movement
  *
- * @method \eurokeep\Model\Entity\Account newEmptyEntity()
- * @method \eurokeep\Model\Entity\Account newEntity(array $data, array $options = [])
- * @method array<\eurokeep\Model\Entity\Account> newEntities(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Account get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
- * @method \eurokeep\Model\Entity\Account findOrCreate($search, ?callable $callback = null, array $options = [])
- * @method \eurokeep\Model\Entity\Account patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method array<\eurokeep\Model\Entity\Account> patchEntities(iterable $entities, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Account|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
- * @method \eurokeep\Model\Entity\Account saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Account>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Account>|false saveMany(iterable $entities, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Account>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Account> saveManyOrFail(iterable $entities, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Account>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Account>|false deleteMany(iterable $entities, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Account>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Account> deleteManyOrFail(iterable $entities, array $options = [])
+ * @method Account newEmptyEntity()
+ * @method Account newEntity(array $data, array $options = [])
+ * @method array<Account> newEntities(array $data, array $options = [])
+ * @method Account get(mixed $primaryKey, array|string $finder = 'all', CacheInterface|string|null $cache = null, Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method Account findOrCreate($search, ?callable $callback = null, array $options = [])
+ * @method Account patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method array<Account> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method Account|false save(EntityInterface $entity, array $options = [])
+ * @method Account saveOrFail(EntityInterface $entity, array $options = [])
+ * @method iterable<Account>|ResultSetInterface<Account>|false saveMany(iterable $entities, array $options = [])
+ * @method iterable<Account>|ResultSetInterface<Account> saveManyOrFail(iterable $entities, array $options = [])
+ * @method iterable<Account>|ResultSetInterface<Account>|false deleteMany(iterable $entities, array $options = [])
+ * @method iterable<Account>|ResultSetInterface<Account> deleteManyOrFail(iterable $entities, array $options = [])
  *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin TimestampBehavior
  */
-class AccountTable extends Table
+class AccountTable extends OwnedTable
 {
     /**
      * Initialize method
      *
      * @param array<string, mixed> $config The configuration for the Table.
-     * @return void
      */
+    #[Override]
     public function initialize(array $config): void
     {
         parent::initialize($config);
@@ -46,6 +54,7 @@ class AccountTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+        /** @see UserOwnedBehavior */
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Accounttype', [
@@ -67,9 +76,9 @@ class AccountTable extends Table
     /**
      * Default validation rules.
      *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * @param Validator $validator Validator instance.
      */
+    #[Override]
     public function validationDefault(Validator $validator): Validator
     {
         $validator
@@ -113,20 +122,20 @@ class AccountTable extends Table
             ->integer('user_id')
             ->notEmptyString('user_id');
 
-        return $validator;
+        return parent::validationDefault($validator);
     }
 
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
      *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
+     * @param RulesChecker $rules The rules object to be modified.
      */
+    #[Override]
     public function buildRules(RulesChecker $rules): RulesChecker
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
 
-        return $rules;
+        return parent::buildRules($rules);
     }
 }

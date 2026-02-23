@@ -10,6 +10,7 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use eurokeep\Model\Table\UsersTable;
+use Override;
 
 /**
  * UserDelete command.
@@ -20,9 +21,10 @@ class UserDeleteCommand extends Command
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/4/en/console-commands/commands.html#defining-arguments-and-options
-     * @param \Cake\Console\ConsoleOptionParser $parser The parser to be defined
-     * @return \Cake\Console\ConsoleOptionParser The built parser.
+     * @param ConsoleOptionParser $parser The parser to be defined
+     * @return ConsoleOptionParser The built parser.
      */
+    #[Override]
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser
     {
         $parser = parent::buildOptionParser($parser);
@@ -33,16 +35,17 @@ class UserDeleteCommand extends Command
     /**
      * Implement this method with your command's logic.
      *
-     * @param \Cake\Console\Arguments $args The command arguments.
-     * @param \Cake\Console\ConsoleIo $io The console io
+     * @param Arguments $args The command arguments.
+     * @param ConsoleIo $io The console io
      * @return null|void|int The exit code or null for success
      */
+    #[Override]
     public function execute(Arguments $args, ConsoleIo $io)
     {
         /** @var UsersTable $usersTable */
         $usersTable = TableRegistry::getTableLocator()->get('Users');
         $users = $usersTable->find()->toArray();
-        $io->out("Select the user you want to remove from your EuroKeep instance");
+        $io->out('Select the user you want to remove from your EuroKeep instance');
 
         $mapping = [];
         foreach($users as $user) {
@@ -67,7 +70,7 @@ class UserDeleteCommand extends Command
         $user = $mapping[$selection];
 
         if ($email !== $user['email']) {
-            $io->out("Seems you were wrong with the email address.");
+            $io->out('Seems you were wrong with the email address.');
             $io->out("That's all, folks.");
             exit(1);
         }

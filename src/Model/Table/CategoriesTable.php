@@ -3,13 +3,17 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
+use Cake\ORM\Query\SelectQuery;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Category Model
+ * Categories Model
  *
+ * @property \eurokeep\Model\Table\BudgetTable&\Cake\ORM\Association\HasMany $Budget
  * @property \eurokeep\Model\Table\MovementTable&\Cake\ORM\Association\HasMany $Movement
+ * @property \eurokeep\Model\Table\SubscriptionTable&\Cake\ORM\Association\HasMany $Subscription
  *
  * @method \eurokeep\Model\Entity\Category newEmptyEntity()
  * @method \eurokeep\Model\Entity\Category newEntity(array $data, array $options = [])
@@ -26,8 +30,9 @@ use Cake\Validation\Validator;
  * @method iterable<\eurokeep\Model\Entity\Category>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Category> deleteManyOrFail(iterable $entities, array $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin \Cake\ORM\Behavior\TreeBehavior
  */
-class CategoryTable extends Table
+class CategoriesTable extends Table
 {
     /**
      * Initialize method
@@ -39,16 +44,29 @@ class CategoryTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('category');
+        $this->setTable('categories');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Tree');
 
+        $this->belongsTo('ParentCategories', [
+            'className' => 'Categories',
+            'foreignKey' => 'parent_id',
+        ]);
+        $this->hasMany('Budget', [
+            'foreignKey' => 'category_id',
+        ]);
+        $this->hasMany('ChildCategories', [
+            'className' => 'Categories',
+            'foreignKey' => 'parent_id',
+        ]);
         $this->hasMany('Movement', [
             'foreignKey' => 'category_id',
-            'dependent' => true,
-            'cascadeCallbacks' => true,
+        ]);
+        $this->hasMany('Subscription', [
+            'foreignKey' => 'category_id',
         ]);
     }
 
@@ -77,9 +95,30 @@ class CategoryTable extends Table
             ->notEmptyString('name');
 
         $validator
-            ->integer('parent_category_id')
-            ->allowEmptyString('parent_category_id');
+            ->integer('parent_id')
+            ->allowEmptyString('parent_id');
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
+        $rules->add($rules->existsIn(['parent_id'], 'ParentCategories'), ['errorField' => 'parent_id']);
+
+        return $rules;
+    }
+
+    public function getRootCategories(): array
+    {
+        return $this->find()->where([
+            'parent_id IS NULL',
+        ])->toArray();
     }
 }

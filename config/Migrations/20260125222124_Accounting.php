@@ -25,7 +25,6 @@ class Accounting extends AbstractMigration
      *
      * More information on this method is available here:
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
-     * @return void
      */
     public function change(): void
     {
@@ -161,9 +160,19 @@ class Accounting extends AbstractMigration
                     'limit'   => 128,
                     'null'    => false,
                 ])
-                ->addColumn('parent_category_id', 'integer', [
+                ->addColumn('parent_id', 'integer', [
                     'default' => null,
                     'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('flags', 'lft', [
+                    'default' => null,
+                    'limit'   => 6,
+                    'null'    => false,
+                ])
+                ->addColumn('flags', 'rght', [
+                    'default' => null,
+                    'limit'   => 6,
                     'null'    => false,
                 ])
                 ->create();

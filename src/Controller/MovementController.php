@@ -3,14 +3,22 @@ declare(strict_types=1);
 
 namespace eurokeep\Controller;
 
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Datasource\ResultSetInterface;
+use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
+use DateMalformedStringException;
+use DateTime;
+use eurokeep\Model\Entity\Movement;
 use eurokeep\Model\Table\AccountTable;
+use eurokeep\Model\Table\MovementTable;
+use InvalidArgumentException;
 
 /**
  * Movement Controller
  *
- * @property \eurokeep\Model\Table\MovementTable $Movement
- * @method \eurokeep\Model\Entity\Movement[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * @property MovementTable $Movement
+ * @method Movement[]|ResultSetInterface paginate($object = null, array $settings = [])
  */
 class MovementController extends AuthenticatedController
 {
@@ -25,7 +33,7 @@ class MovementController extends AuthenticatedController
     /**
      * Add method
      *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     * @return Response|null|void Redirects on successful add, renders view otherwise.
      */
     public function add()
     {
@@ -84,11 +92,10 @@ class MovementController extends AuthenticatedController
     /**
      * Edit method
      *
-     * @param string|null $id Movement id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $id Movement id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit(int|null $id = null): void
     {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
@@ -114,7 +121,7 @@ class MovementController extends AuthenticatedController
     /**
      * Index method
      *
-     * @return \Cake\Http\Response|null|void Renders view
+     * @return Response|null|void Renders view
      */
     public function index()
     {
@@ -137,31 +144,20 @@ class MovementController extends AuthenticatedController
     /**
      * @param int $accountId
      * @return void
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function stream(int $accountId)
+    public function stream(int $accountId): void
     {
-        /** @var $HostsTable AccountTable */
+        /** @var $accountTable AccountTable */
         $accountTable = TableRegistry::getTableLocator()->get('Account');
         $account = $accountTable->get($accountId);
 
-        $start = new \DateTime($this->request->getQueryParams()['start']);
-        $end = new \DateTime($this->request->getQueryParams()['end']);
-        $startStr = $start->format('Y-m-d');
-        $endStr = $end->format('Y-m-d');
-        $movements = $this
-            ->Movement
-            ->find()
-            ->contain(['Category'])
-            ->where([
-                'Movement.created >=' => $startStr,
-                'Movement.created <' => $endStr,
-                'account_id' => $accountId
-            ])
-            ->order(['Movement.created' => 'DESC'])
-            ->limit(250)
-            ->toArray();
-        $this->set('movements', $movements);
+        $start = new DateTime($this->request->getQueryParams()['start'] ?? date('Y-m-d H:i:s'));
+        $end = new DateTime($this->request->getQueryParams()['end'] ?? date('Y-m-d H:i:s'));
+
+        $movements = $account->streamMovements($start, $end);
+        $settlement = $account->settlement($movements);
+
 
       $query = $this->Movement->find();
         $value = $query
@@ -177,19 +173,54 @@ class MovementController extends AuthenticatedController
         $account->set('balance_value', $value);
 
 
+        $this->set('movements', $movements);
+        $this->set('settlement', $settlement);
         $this->set('account', $account);
         $this->set('success', true);
-        $this->viewBuilder()->setOption('serialize', ['movements', 'account', 'success']);
+        $this->viewBuilder()->setOption('serialize', ['settlement', 'movements', 'account', 'success']);
+        $this->viewBuilder()->setClassName('Json');
+    }
+
+    public function mapping(): void
+    {
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+
+        if (!$this->request->is('post')) {
+            $this->set('errors', [
+                'Method is not allowed'
+            ]);
+            return;
+        }
+
+        $comment = $this->request->getData('comment', '');
+        if (empty($comment)) {
+            throw new InvalidArgumentException('Comment cannot be empty');
+        }
+        $movement = $this
+            ->Movement
+            ->find()
+            ->where([
+                'comment LIKE' => '%' . h($comment) . '%',
+            ])
+            ->orderBy([
+                'Movement.created' => 'DESC',
+            ])
+            ->contain(['Categories'])
+            ->firstOrFail();
+        $this->set('movement', $movement);
+
+        $this->viewBuilder()->setOption('serialize', ['success', 'movement']);
     }
 
     /**
      * View method
      *
      * @param string|null $id Movement id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return Response|null|void Renders view
+     * @throws RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view(int|null $id = null)
     {
         $movement = $this->Movement->get($id, [
             'contain' => [],
@@ -203,10 +234,10 @@ class MovementController extends AuthenticatedController
      * Delete method
      *
      * @param string|null $id Movement id.
-     * @return \Cake\Http\Response|null|void Redirects to list.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return Response|null|void Redirects to list.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete(int|null $id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $movement = $this->Movement->get($id);
