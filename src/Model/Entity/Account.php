@@ -7,13 +7,14 @@ use eurokeep\Model\Table\AccountTable;
 use eurokeep\Model\Table\MovementTable;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
+use \DateTime;
 
 /**
  * Account Entity
  *
  * @property int $id
- * @property \Cake\I18n\DateTime|null $created
- * @property \Cake\I18n\DateTime|null $modified
+ * @property DateTime|null $created
+ * @property DateTime|null $modified
  * @property int $flags
  * @property string $name
  * @property string $emoji
@@ -23,9 +24,9 @@ use Cake\ORM\TableRegistry;
  * @property int $accounttype_id
  * @property int $user_id
  *
- * @property \eurokeep\Model\Entity\Accounttype $accounttype
- * @property \eurokeep\Model\Entity\Movement[] $movement
- * @property \eurokeep\Model\Entity\User $user
+ * @property Accounttype $accounttype
+ * @property Movement[] $movement
+ * @property User $user
  */
 class Account extends Entity
 {
@@ -56,7 +57,6 @@ class Account extends Entity
 
     /**
      * I will summarize the Movements on the Account and store the current balance to it.
-     * @return void
      */
     public function summarize(): void
     {
@@ -75,5 +75,40 @@ class Account extends Entity
         /** @var AccountTable $accountTable */
         $accountTable = TableRegistry::getTableLocator()->get('Account');
         $accountTable->save($this);
+    }
+
+    public function streamMovements(DateTime $start, DateTime $end) : array
+    {
+        $MovementTable = TableRegistry::getTableLocator()->get('Movement');
+        return $MovementTable
+            ->find()
+            ->contain(['Categories'])
+            ->where([
+                'Movement.created >=' => $start->format('Y-m-d'),
+                'Movement.created <' => $end->format('Y-m-d'),
+                'account_id' => $this->id
+            ])
+            ->order(['Movement.created' => 'DESC'])
+            ->limit(250)
+            ->toArray();
+
+    }
+
+    public function settlement(array $movements): array {
+        $settlement = [
+            'expenses' => 0,
+            'revenues' => 0,
+            'settlement' => 0
+        ];
+        foreach($movements as $movement) {
+            if($movement->balance_value < 0) {
+                $settlement['expenses'] += $movement->balance_value;
+            } else {
+                $settlement['revenues'] += $movement->balance_value;
+            }
+            $settlement['settlement'] += $movement->balance_value;
+        }
+
+        return $settlement;
     }
 }

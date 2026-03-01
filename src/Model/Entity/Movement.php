@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Entity;
 
+use Cake\I18n\DateTime;
 use eurokeep\Model\Table\AccountTable;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
@@ -11,16 +12,16 @@ use Cake\ORM\TableRegistry;
  * Movement Entity
  *
  * @property int $id
- * @property \Cake\I18n\DateTime|null $created
- * @property \Cake\I18n\DateTime|null $modified
+ * @property DateTime|null $created
+ * @property DateTime|null $modified
  * @property int $flags
  * @property string $balance_value
  * @property string $comment
  * @property int|null $category_id
  * @property int $account_id
  *
- * @property \eurokeep\Model\Entity\Category $category
- * @property \eurokeep\Model\Entity\Account $account
+ * @property Category $category
+ * @property Account $account
  */
 class Movement extends Entity
 {
@@ -45,6 +46,9 @@ class Movement extends Entity
         'account' => true,
     ];
 
+    /**
+     * @return Account
+     */
     final public function getAccount(): Account
     {
         /** @var AccountTable $accountTable */

@@ -3,31 +3,37 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Table;
 
-use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
+use Cake\Datasource\EntityInterface;
+use Cake\Datasource\ResultSetInterface;
+use Cake\ORM\Association\HasMany;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Closure;
+use eurokeep\Model\Entity\Accounttype;
+use Override;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Accounttype Model
  *
- * @property \eurokeep\Model\Table\AccountTable&\Cake\ORM\Association\HasMany $Account
+ * @property AccountTable&HasMany $Account
  *
- * @method \eurokeep\Model\Entity\Accounttype newEmptyEntity()
- * @method \eurokeep\Model\Entity\Accounttype newEntity(array $data, array $options = [])
- * @method array<\eurokeep\Model\Entity\Accounttype> newEntities(array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
- * @method \eurokeep\Model\Entity\Accounttype findOrCreate($search, ?callable $callback = null, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method array<\eurokeep\Model\Entity\Accounttype> patchEntities(iterable $entities, array $data, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
- * @method \eurokeep\Model\Entity\Accounttype saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype>|false saveMany(iterable $entities, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype> saveManyOrFail(iterable $entities, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype>|false deleteMany(iterable $entities, array $options = [])
- * @method iterable<\eurokeep\Model\Entity\Accounttype>|\Cake\Datasource\ResultSetInterface<\eurokeep\Model\Entity\Accounttype> deleteManyOrFail(iterable $entities, array $options = [])
+ * @method Accounttype newEmptyEntity()
+ * @method Accounttype newEntity(array $data, array $options = [])
+ * @method array<Accounttype> newEntities(array $data, array $options = [])
+ * @method Accounttype get(mixed $primaryKey, array|string $finder = 'all', CacheInterface|string|null $cache = null, Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method Accounttype findOrCreate($search, ?callable $callback = null, array $options = [])
+ * @method Accounttype patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method array<Accounttype> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method Accounttype|false save(EntityInterface $entity, array $options = [])
+ * @method Accounttype saveOrFail(EntityInterface $entity, array $options = [])
+ * @method iterable<Accounttype>|ResultSetInterface<Accounttype>|false saveMany(iterable $entities, array $options = [])
+ * @method iterable<Accounttype>|ResultSetInterface<Accounttype> saveManyOrFail(iterable $entities, array $options = [])
+ * @method iterable<Accounttype>|ResultSetInterface<Accounttype>|false deleteMany(iterable $entities, array $options = [])
+ * @method iterable<Accounttype>|ResultSetInterface<Accounttype> deleteManyOrFail(iterable $entities, array $options = [])
  *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin TimestampBehavior
  */
 class AccounttypeTable extends Table
 {
@@ -35,8 +41,8 @@ class AccounttypeTable extends Table
      * Initialize method
      *
      * @param array<string, mixed> $config The configuration for the Table.
-     * @return void
      */
+    #[Override]
     public function initialize(array $config): void
     {
         parent::initialize($config);
@@ -57,9 +63,9 @@ class AccounttypeTable extends Table
     /**
      * Default validation rules.
      *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * @param Validator $validator Validator instance.
      */
+    #[Override]
     public function validationDefault(Validator $validator): Validator
     {
         $validator
@@ -72,6 +78,6 @@ class AccounttypeTable extends Table
             ->requirePresence('name', 'create')
             ->notEmptyString('name');
 
-        return $validator;
+        return parent::validationDefault($validator);
     }
 }

@@ -3,20 +3,24 @@ declare(strict_types=1);
 
 namespace eurokeep\Controller;
 
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Datasource\ResultSetInterface;
+use eurokeep\Model\Entity\Accounttype;
+use eurokeep\Model\Table\AccounttypeTable;
+
 /**
  * Accounttype Controller
  *
- * @property \eurokeep\Model\Table\AccounttypeTable $Accounttype
- * @method \eurokeep\Model\Entity\Accounttype[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * @property AccounttypeTable $Accounttype
+ * @method Accounttype[]|ResultSetInterface paginate($object = null, array $settings = [])
  */
 class AccounttypeController extends AuthenticatedController
 {
     /**
      * Index method
      *
-     * @return \Cake\Http\Response|null|void Renders view
      */
-    public function index()
+    public function index() :void
     {
         $accounttypes = $this->paginate($this->Accounttype);
 
@@ -24,62 +28,90 @@ class AccounttypeController extends AuthenticatedController
         $this->set('items', $accounttypes);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['items', 'success', 'accounttypes', 'items']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
      * View method
      *
-     * @param string|null $id Accounttype id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $accountTypeId Accounttype id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view(int | null $accountTypeId = null): void
     {
-        $accounttype = $this->Accounttype->get($id, [
+        $accounttype = $this->Accounttype->get($accountTypeId, [
             'contain' => [],
         ]);
 
-        $this->set(compact('accounttype'));
+        $this->set('accounttype', $accounttype);
+        $this->viewBuilder()->setOption('serialize', ['account', 'success']);
     }
 
     /**
      * Add method
      *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add(): void
     {
-        $accounttype = $this->Accounttype->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $accounttype = $this->Accounttype->patchEntity($accounttype, $this->request->getData());
-            if ($this->Accounttype->save($accounttype)) {
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
 
-                return $this->redirect(['action' => 'index']);
-            }
+        if (!$this->request->is('post')) {
+            $this->set('errors', [
+                'Method is not allowed'
+            ]);
+            return;
         }
-        $this->set(compact('accounttype'));
+
+        // Fetch data
+        $account = $this->request->getData();
+
+        // Add the Account
+        $entity = $this->Accounttype->newEmptyEntity();
+        $entity = $this->Accounttype->patchEntity($entity, $account);
+
+        if ($entity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $entity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+        $this->Accounttype->save($entity);
+
+        $this->set('account', $entity);
+        $this->viewBuilder()->setOption('serialize', ['success', 'account']);
     }
 
     /**
      * Edit method
      *
-     * @param string|null $id Accounttype id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $accountTypeId Accounttype id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit(int|null $accountTypeId = null): void
     {
-        $accounttype = $this->Accounttype->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $accounttype = $this->Accounttype->patchEntity($accounttype, $this->request->getData());
-            if ($this->Accounttype->save($accounttype)) {
+        // Check method
+        if (! $this->request->is(['patch', 'post', 'put'])) {
+            $this->http401('method not allowed');
+        }
 
-                return $this->redirect(['action' => 'index']);
-            }
+        $accounttype = $this->Accounttype->get($accountTypeId);
+
+        // Apply the new data
+        $accounttype = $this
+            ->Accounttype
+            ->patchEntity($accounttype, $this->request->getData());
+
+        // Haz errors?
+        if ($accounttype->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $accounttype->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        // Cannot save?
+        if (!$this->Accounttype->save($accounttype)) {
+            $this->set('success', false);
         }
         $this->set(compact('accounttype'));
     }
@@ -87,18 +119,16 @@ class AccounttypeController extends AuthenticatedController
     /**
      * Delete method
      *
-     * @param string|null $id Accounttype id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $accountTypeId Accounttype id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete(int|null $accountTypeId = null): void
     {
         $this->request->allowMethod(['post', 'delete']);
-        $accounttype = $this->Accounttype->get($id);
-        if (! $this->Accounttype->delete($accounttype)) {
-            $this->addError('Account type not deleted');
-        }
+        $accountType = $this->Accounttype->get($accountTypeId);
 
-        return $this->redirect(['action' => 'index']);
+        if (!$this->Accounttype->delete($accountType)) {
+            $this->addError('Error', 'Account type not deleted.');
+        }
     }
 }

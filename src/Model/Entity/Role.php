@@ -3,18 +3,19 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Entity;
 
+use Cake\I18n\DateTime;
 use Cake\ORM\Entity;
 
 /**
  * Role Entity
  *
  * @property int $id
- * @property \Cake\I18n\DateTime $created
- * @property \Cake\I18n\DateTime $modified
+ * @property DateTime $created
+ * @property DateTime $modified
  * @property int $flags
  * @property string $name
  *
- * @property \eurokeep\Model\Entity\User[] $users
+ * @property User[] $users
  */
 class Role extends Entity
 {

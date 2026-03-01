@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Entity;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
  * CategoryMapping Entity
  *
  * @property int $id
- * @property \Cake\I18n\FrozenTime|null $created
- * @property \Cake\I18n\FrozenTime|null $modified
+ * @property FrozenTime|null $created
+ * @property FrozenTime|null $modified
  * @property int $flags
  * @property string $comment_mask
  * @property int|null $category_id

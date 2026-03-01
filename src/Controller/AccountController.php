@@ -3,51 +3,50 @@ declare(strict_types=1);
 
 namespace eurokeep\Controller;
 
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Datasource\ResultSetInterface;
+use eurokeep\Model\Entity\Account;
+use eurokeep\Model\Table\AccountTable;
+
 /**
  * Account Controller
  *
- * @property \eurokeep\Model\Table\AccountTable $Account
- * @method \eurokeep\Model\Entity\Account[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * @property AccountTable $Account
+ * @method Account[]|ResultSetInterface paginate($object = null, array $settings = [])
  */
 class AccountController extends AuthenticatedController
 {
     /**
      * Index method
      *
-     * @return \Cake\Http\Response|null|void Renders view
      */
-    public function index()
+    public function index(): void
     {
-        $qry = $this->Account->find();
-
-        $this->applyDefaultFilters($qry)
-            ->order(['Account.name' => 'ASC']);
+        $accountQuery = $this
+            ->Account
+            ->find()
+            ->orderBy(['Account.name' => 'ASC']);
 
         $filters = $this->getRequest()->getQueryParams()['filter'] ?? [];
         foreach ($filters as $fieldname => $value) {
-            $qry->where(["$fieldname LIKE" => "$value%",]);
+            $accountQuery->where(["$fieldname LIKE" => "$value%",]);
         }
 
-        $account = $this->paginate($qry);
+        $account = $this->paginate($accountQuery);
 
         $this->set('totalBalances', $this->user->getTotalBalances());
         $this->set('items', $account);
-        $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['items', 'success', 'totalBalances']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
      * Add method
      *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add(): void
     {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-        $this->viewBuilder()->setClassName("Json");
 
         if (!$this->request->is('post')) {
             $this->set('errors', [
@@ -56,13 +55,14 @@ class AccountController extends AuthenticatedController
             return;
         }
 
-        $data = $this->request->getData();
-        $data['user_id'] = $this->user->id;
-        $data['balance_value'] = 0;
-        $accountTable = $this->Account;
-        $entity = $accountTable->newEmptyEntity();
-        $entity = $accountTable->patchEntity($entity, $data);
-        $accountTable->save($entity);
+        // Fetch data
+        $account = $this->request->getData();
+        $account['user_id'] = $this->user->id;
+        $account['balance_value'] = 0;
+
+        // Add the Account
+        $entity = $this->Account->newEmptyEntity();
+        $entity = $this->Account->patchEntity($entity, $account);
 
         if ($entity->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -70,21 +70,21 @@ class AccountController extends AuthenticatedController
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+        $this->Account->save($entity);
+
         $this->set('account', $entity);
         $this->viewBuilder()->setOption('serialize', ['success', 'account']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
      * View method
      *
-     * @param string|null $id Account id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $accountId Account id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view(int|null $accountId = null): void
     {
-        $account = $this->Account->get($id, [
+        $account = $this->Account->get($accountId, [
             'contain' => [],
         ]);
 
@@ -97,58 +97,75 @@ class AccountController extends AuthenticatedController
     /**
      * Edit method
      *
-     * @param string|null $id Account id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $accountId Account id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit(int|null $accountId = null): void
     {
-        $account = $this->Account->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $account = $this->Account->patchEntity($account, $this->request->getData());
-            if ($this->Account->save($account)) {
+        // Check method
+        if (! $this->request->is(['patch', 'post', 'put'])) {
+            $this->http401('method not allowed');
+        }
 
-                $this->viewBuilder()->setClassName("Json");
-                return;
-            }
+        $account = $this->Account->get($accountId);
+
+        // Check Ownership
+        if ($account->user_id !== $this->user->id) {
+            $this->http403('This account is not yours');
+        }
+
+        // Apply the new data
+        $account = $this
+            ->Account
+            ->patchEntity($account, $this->request->getData());
+
+        // Haz errors?
+        if ($account->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $account->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        // Cannot save?
+        if (!$this->Account->save($account)) {
+            $this->set('success', false);
         }
         $this->set(compact('account'));
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
      * Delete method
      *
-     * @param string|null $id Account id.
-     * @return \Cake\Http\Response|null|void Redirects to list.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int|null $accountId Account id.
+     * @throws RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete(int|null $accountId = null): void
     {
         $this->request->allowMethod(['post', 'delete']);
-        $account = $this->Account->get($id);
+        $account = $this->Account->get($accountId);
 
         if (!$this->Account->delete($account)) {
-            $this->addError('Account not deleted.');
+            $this->addError('Error', 'Account not deleted.');
         }
     }
 
-    public function summarize($id = null): void
+    /**
+     * @param int|null $accountId Account id.
+     * @return void
+     */
+    public function summarize(int|null $accountId = null): void
     {
-        if($id) {
-            $accounts = [$this->Account->find()->where(['id' => $id])->first()];
+        if ($accountId) {
+            $accounts = [$this->Account->find()->where(['id' => $accountId])->first()];
         } else {
             $accounts = $this->Account->find()->all()->toArray();
         }
         foreach ($accounts as $account) {
             $account->summarize();
         }
-        $this->set('accounts', $account);
+        $this->set('accounts', $accounts);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['accounts', 'success']);
-
-        $this->viewBuilder()->setClassName("Json");
     }
 }
