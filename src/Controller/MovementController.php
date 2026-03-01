@@ -159,16 +159,16 @@ class MovementController extends AuthenticatedController
         $settlement = $account->settlement($movements);
 
 
-      $query = $this->Movement->find();
+        $query = $this->Movement->find();
         $value = $query
-    ->select([
-        'total' => $query->func()->sum('balance_value'),
-    ])
-    ->where([
-        'account_id' => $accountId,
-    ])
-    ->first()
-    ->get('total');
+            ->select([
+                'total' => $query->func()->sum('balance_value'),
+            ])
+            ->where([
+                'account_id' => $accountId,
+            ])
+            ->first()
+            ->get('total');
 
         $account->set('balance_value', $value);
 
@@ -194,6 +194,7 @@ class MovementController extends AuthenticatedController
         }
 
         $comment = $this->request->getData('comment', '');
+        $comment = addcslashes($comment, '%_');
         if (empty($comment)) {
             throw new InvalidArgumentException('Comment cannot be empty');
         }
@@ -201,7 +202,7 @@ class MovementController extends AuthenticatedController
             ->Movement
             ->find()
             ->where([
-                'comment LIKE' => '%' . h($comment) . '%',
+                'comment LIKE' => "%$comment%",
             ])
             ->orderBy([
                 'Movement.created' => 'DESC',
@@ -241,7 +242,7 @@ class MovementController extends AuthenticatedController
     {
         $this->request->allowMethod(['post', 'delete']);
         $movement = $this->Movement->get($id);
-        if (! $this->Movement->delete($movement)) {
+        if (!$this->Movement->delete($movement)) {
             $this->addError('Movement not deleted');
         }
     }
