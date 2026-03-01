@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace eurokeep\Model\Entity;
 
 use Authentication\PasswordHasher\DefaultPasswordHasher;
+use Cake\I18n\FrozenTime;
 use eurokeep\Model\Table\AccountTable;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
@@ -12,16 +13,16 @@ use Cake\ORM\TableRegistry;
  * User Entity
  *
  * @property int $id
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
  * @property int $flags
  * @property string $name
  * @property string $email
  * @property string $password
  * @property int $role_id
  *
- * @property \eurokeep\Model\Entity\Account[] $account
- * @property \eurokeep\Model\Entity\Movement[] $movement
+ * @property Account[] $account
+ * @property Movement[] $movement
  */
 class User extends Entity
 {
@@ -55,18 +56,25 @@ class User extends Entity
         'password',
     ];
 
+    /**
+     * @param string $password
+     * @return string
+     */
     protected function _setPassword(string $password) : string {
         $hasher = new DefaultPasswordHasher();
 
         return $hasher->hash($password);
     }
 
+    /**
+     * @return array
+     */
     final public function getTotalBalances() : array {
-        /** @var AccountTable $AccountTable */
-        $AccountTable = TableRegistry::getTableLocator()->get('Account');
+        /** @var AccountTable $accountTable */
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
 
         // Full Balance
-        $qry = $AccountTable->find();
+        $qry = $accountTable->find();
         $qry->where(['user_id' => $this->id])
             ->select([
                 'balance_currency',

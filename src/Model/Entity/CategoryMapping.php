@@ -3,21 +3,20 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Entity;
 
-use Cake\I18n\DateTime;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
- * Role Entity
+ * CategoryMapping Entity
  *
  * @property int $id
- * @property DateTime $created
- * @property DateTime $modified
+ * @property FrozenTime|null $created
+ * @property FrozenTime|null $modified
  * @property int $flags
- * @property string $name
- *
- * @property User[] $users
+ * @property string $comment_mask
+ * @property int|null $category_id
  */
-class Role extends Entity
+class CategoryMapping extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -32,7 +31,7 @@ class Role extends Entity
         'created' => true,
         'modified' => true,
         'flags' => true,
-        'name' => true,
-        'users' => true,
+        'comment_mask' => true,
+        'category_id' => true,
     ];
 }

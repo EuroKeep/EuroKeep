@@ -7,7 +7,7 @@ use Cake\I18n\DateTime;
 use Cake\ORM\Entity;
 
 /**
- * Role Entity
+ * Accounttype Entity
  *
  * @property int $id
  * @property DateTime $created
@@ -15,9 +15,9 @@ use Cake\ORM\Entity;
  * @property int $flags
  * @property string $name
  *
- * @property User[] $users
+ * @property Account[] $account
  */
-class Role extends Entity
+class Accounttype extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -33,6 +33,6 @@ class Role extends Entity
         'modified' => true,
         'flags' => true,
         'name' => true,
-        'users' => true,
+        'account' => true,
     ];
 }

@@ -17,6 +17,9 @@ declare(strict_types=1);
 namespace eurokeep\Controller;
 
 use Cake\Event\EventInterface;
+use Cake\Http\Response;
+use Exception;
+use Override;
 
 /**
  * Error Handling Controller
@@ -26,10 +29,10 @@ use Cake\Event\EventInterface;
 class ErrorController extends AppController
 {
     /**
-     * Initialization hook method.
-     *
      * @return void
+     * @throws Exception
      */
+    #[Override]
     public function initialize(): void
     {
         $this->loadComponent('RequestHandler');
@@ -38,9 +41,10 @@ class ErrorController extends AppController
     /**
      * beforeFilter callback.
      *
-     * @param \Cake\Event\EventInterface<\eurokeep\Controller\ErrorController> $event Event.
-     * @return \Cake\Http\Response|null|void
+     * @param EventInterface<ErrorController> $event Event.
+     * @return Response|null|void
      */
+    #[Override]
     public function beforeFilter(EventInterface $event)
     {
     }
@@ -48,23 +52,15 @@ class ErrorController extends AppController
     /**
      * beforeRender callback.
      *
-     * @param \Cake\Event\EventInterface<\eurokeep\Controller\ErrorController> $event Event.
-     * @return \Cake\Http\Response|null|void
+     * @param EventInterface<ErrorController> $event Event.
+     * @return Response|null|void
      */
-    public function beforeRender(EventInterface $event)
+    #[Override]
+    public function beforeRender(EventInterface $event): void
     {
         parent::beforeRender($event);
 
         $this->viewBuilder()->setTemplatePath('Error');
     }
 
-    /**
-     * afterFilter callback.
-     *
-     * @param \Cake\Event\EventInterface<\eurokeep\Controller\ErrorController> $event Event.
-     * @return \Cake\Http\Response|null|void
-     */
-    public function afterFilter(EventInterface $event)
-    {
-    }
 }

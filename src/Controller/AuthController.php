@@ -3,10 +3,16 @@ declare(strict_types=1);
 
 namespace eurokeep\Controller;
 
+use Authentication\Controller\Component\AuthenticationComponent;
+use JetBrains\PhpStorm\NoReturn;
+use Override;
+
 /**
  * Auth Controller.
  *
  * I handle logging in and out.
+ *
+ * @property AuthenticationComponent $Authentication
  *
  */
 class AuthController extends AppController
@@ -14,6 +20,7 @@ class AuthController extends AppController
     /**
      * @inheritDoc
      */
+    #[Override]
     public function initialize(): void
     {
         parent::initialize();
@@ -29,9 +36,9 @@ class AuthController extends AppController
 
         $errors = [];
         if($result && $result->isValid()) {
-            $user = $result->getData();
+            $foundUser = $result->getData();
             $this->set('success', true);
-            $this->set('user', $user);
+            $this->set('user', $foundUser);
         } else {
             $this->set('success', false);
             $errors[] = 'User authentication failed';
@@ -39,15 +46,15 @@ class AuthController extends AppController
 
         $this->set('errors', $errors);
         $this->viewBuilder()->setOption('serialize', ['user', 'success', 'errors']);
-        $this->viewBuilder()->setClassName("Json");
     }
 
     /**
      * I handle the logout.
      */
+    #[NoReturn]
     public function logout(): void {
         $this->Authentication->logout();
-        header("Location: /a/login");
+        header('Location: /a/login');
         exit(302);
     }
 }

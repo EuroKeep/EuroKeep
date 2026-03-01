@@ -8,13 +8,14 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
-use eurokeep\Model\Table\UsersTable;
+use eurokeep\Model\Table\AccountTable;
+use eurokeep\Model\Table\MovementTable;
 use Override;
 
 /**
- * UserAdd command.
+ * AccountsCleanup command.
  */
-class UserAddCommand extends Command
+class AccountsCleanupCommand extends Command
 {
     /**
      * Hook method for defining this command's option parser.
@@ -41,25 +42,24 @@ class UserAddCommand extends Command
     #[Override]
     public function execute(Arguments $args, ConsoleIo $io)
     {
-        $io->out('Add a new user.');
+        /** @var AccountTable $accountTable */
+        $accountTable = TableRegistry::getTableLocator()->get('Account');
+        $accounts = $accountTable->find();
 
-        $email = $io->ask('Please enter email.');
-        $email = trim($email);
+        /** @var MovementTable $movementTable */
+        $movementTable = TableRegistry::getTableLocator()->get('Movement');
+        foreach ($accounts as $account) {
+            $value = $movementTable
+                ->find()
+                ->where([
+                    'account_id' => $account->get('id')
+                ])
+                ->all()
+                ->sumOf('balance_value');
 
-        $name = $io->ask('Please enter name.');
-        $name = trim($name);
+            $account->set('balance_value', $value);
 
-        $password = $io->ask('Please enter the password.');
-        $password = trim($password);
-
-        /** @var UsersTable $usersTable */
-        $usersTable = TableRegistry::getTableLocator()->get('Users');
-        $user = $usersTable->create($email, $name, $password);
-
-        $io->out("User #{$user['id']}, {$user['email']} was created.");
-
-        // @todo fetch host name from environment / config.
-        $io->out('When logging in to https://eurokeep.nox.kiwi/ the user will have to reset the password.');
-        $io->out("That's all, folks.");
+            $account->save($account);
+        }
     }
 }
