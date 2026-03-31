@@ -1,0 +1,65 @@
+<?php
+declare(strict_types=1);
+
+namespace eurokeep\Model\Entity;
+
+use Cake\Datasource\ResultSetInterface;
+use Cake\I18n\FrozenTime;
+use eurokeep\Model\Table\CategoriesTable;
+use Cake\Chronos\Chronos;
+use Cake\ORM\Entity;
+use Cake\ORM\TableRegistry;
+
+/**
+ * Budget Entity
+ *
+ * @property int $id
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
+ * @property int $flags
+ * @property string $name
+ * @property float $limit
+ * @property int $category_id
+ * @property int $user_id
+ * @property string $currency
+ *
+ * @property \eurokeep\Model\Entity\Category $category
+ */
+class Budget extends Entity
+{
+    /**
+     * Fields that can be mass assigned using newEntity() or patchEntity().
+     *
+     * Note that when '*' is set to true, this allows all unspecified fields to
+     * be mass assigned. For security purposes, it is advised to set '*' to false
+     * (or remove it), and explicitly make individual fields accessible as needed.
+     *
+     * @var array<string, bool>
+     */
+    protected array $_accessible = [
+        'created' => true,
+        'modified' => true,
+        'flags' => true,
+        'name' => true,
+        'limit' => true,
+        'category_id' => true,
+        'user_id' => true,
+        'currency' => true,
+        'category' => true,
+    ];
+
+    /**
+     * I will find those movements of the current Budget's Category (and their Children) that took place between $start and $end
+     * @param Chronos $start I am the start of the time range to watch for movements that match the Budget's criteria.
+     * @param Chronos $end I am the end of the time range to watch for movements that match the Budget's criteria.
+     */
+    public function getMovements(Chronos $start, Chronos $end) : ResultSetInterface {
+        $movementTable = TableRegistry::getTableLocator()->get('Movement');
+
+        /** @var CategoriesTable $categoriesTable */
+        $categoriesTable = $movementTable->Categories;
+        $category = $categoriesTable->get($this->category_id);
+
+        return $category->getMovements($start, $end);
+    }
+}
