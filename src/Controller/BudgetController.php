@@ -5,7 +5,6 @@ namespace eurokeep\Controller;
 
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Datasource\ResultSetInterface;
-use DateMalformedStringException;
 use eurokeep\Model\Entity\Budget;
 use eurokeep\Model\Table\BudgetTable;
 use eurokeep\Model\Table\MovementTable;
@@ -44,7 +43,7 @@ class BudgetController extends AuthenticatedController
     }
 
     /**
-     * @return void
+     * I will list the Budgets for the API
      */
     public function list(): void
     {
