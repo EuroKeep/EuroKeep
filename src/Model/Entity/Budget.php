@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Entity;
 
-use Cake\I18n\FrozenDate;
+use Cake\Datasource\ResultSetInterface;
 use Cake\I18n\FrozenTime;
 use eurokeep\Model\Table\CategoriesTable;
-use eurokeep\Model\Table\MovementTable;
 use Cake\Chronos\Chronos;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
@@ -49,7 +48,12 @@ class Budget extends Entity
         'category' => true,
     ];
 
-    public function getMovements(Chronos $start, Chronos $end)  {
+    /**
+     * I will find those movements of the current Budget's Category (and their Children) that took place between $start and $end
+     * @param Chronos $start I am the start of the time range to watch for movements that match the Budget's criteria.
+     * @param Chronos $end I am the end of the time range to watch for movements that match the Budget's criteria.
+     */
+    public function getMovements(Chronos $start, Chronos $end) : ResultSetInterface {
         $movementTable = TableRegistry::getTableLocator()->get('Movement');
 
         /** @var CategoriesTable $categoriesTable */
@@ -57,51 +61,5 @@ class Budget extends Entity
         $category = $categoriesTable->get($this->category_id);
 
         return $category->getMovements($start, $end);
-    }
-
-    /**
-     * @param Chronos $start Where the time begins.
-     * @param Chronos $end Where it ends.
-     * @return float I am the utilized value of the Budget.
-     */
-    public function getSpent(Chronos $start, Chronos $end): float
-    {
-        /** @var MovementTable $movementTable */
-        $movementTable = TableRegistry::getTableLocator()->get('Movement');
-        $query = $movementTable->find();
-
-        $query = $query
-            ->contain(['Account'])
-            ->select([
-                'total' => $query->func()->sum('Movement.balance_value')
-            ])
-            ->where([
-                'Movement.balance_value <' => 0,
-                'Account.balance_currency' => $this->currency
-            ])
-            ->matching('Categories.Budget', fn($q) => $q->where([
-                'Budget.id' => $this->id,
-            ]));
-
-        if ($start) {
-            $query->where(['Movement.created >=' => $start]);
-        }
-
-        if ($end) {
-            $query->where(['Movement.created <=' => $end]);
-        }
-
-        return round((float)$query->first()->total, 2);
-    }
-
-    public static function summarize(array $movements): float
-    {
-        $a = 0;
-
-        foreach($movements as $movement) {
-            $a += round($movement->balance_value, 2);
-        }
-
-        return (float) $a;
     }
 }
