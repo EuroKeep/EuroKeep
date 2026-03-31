@@ -44,7 +44,7 @@ class BudgetController extends AuthenticatedController
     }
 
     /**
-     * @throws DateMalformedStringException
+     * @return void
      */
     public function list(): void
     {
