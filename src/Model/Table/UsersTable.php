@@ -60,6 +60,8 @@ class UsersTable extends Table
             'dependent' => true,
             'cascadeCallbacks' => true,
         ]);
+
+        $this->getSchema()->setColumnType('settings', 'json');
     }
 
     /**
