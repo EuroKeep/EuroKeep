@@ -126,8 +126,8 @@ class Accounting extends AbstractMigration
         }
 
         // Category
-        if (!$this->hasTable('category')) {
-            $this->table('category')
+        if (!$this->hasTable('categories')) {
+            $this->table('categories')
                 ->addColumn('id', 'integer', [
                     'autoIncrement' => true,
                     'default'       => null,
@@ -165,12 +165,12 @@ class Accounting extends AbstractMigration
                     'limit'   => 11,
                     'null'    => false,
                 ])
-                ->addColumn('flags', 'lft', [
+                ->addColumn('lft', 'integer', [
                     'default' => null,
                     'limit'   => 6,
                     'null'    => false,
                 ])
-                ->addColumn('flags', 'rght', [
+                ->addColumn('rght', 'integer', [
                     'default' => null,
                     'limit'   => 6,
                     'null'    => false,

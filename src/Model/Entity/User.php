@@ -20,6 +20,7 @@ use Cake\ORM\TableRegistry;
  * @property string $email
  * @property string $password
  * @property int $role_id
+ * @property array $settings
  *
  * @property Account[] $account
  * @property Movement[] $movement
@@ -45,6 +46,7 @@ class User extends Entity
         'account' => true,
         'movement' => true,
         'role_id' => true,
+        'settings' => true
     ];
 
     /**
@@ -60,7 +62,8 @@ class User extends Entity
      * @param string $password
      * @return string
      */
-    protected function _setPassword(string $password) : string {
+    protected function _setPassword(string $password): string
+    {
         $hasher = new DefaultPasswordHasher();
 
         return $hasher->hash($password);
@@ -69,7 +72,8 @@ class User extends Entity
     /**
      * @return array
      */
-    final public function getTotalBalances() : array {
+    final public function getTotalBalances(): array
+    {
         /** @var AccountTable $accountTable */
         $accountTable = TableRegistry::getTableLocator()->get('Account');
 
@@ -86,9 +90,9 @@ class User extends Entity
 
 
         $totalBalances = [];
-        foreach($sum as $row){
+        foreach ($sum as $row) {
             $totalBalances[] = [
-                'currency' =>$row['balance_currency'],
+                'currency' => $row['balance_currency'],
                 'value' => $row['total_balance'],
             ];
         }
