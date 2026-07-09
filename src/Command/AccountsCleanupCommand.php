@@ -44,7 +44,7 @@ class AccountsCleanupCommand extends Command
     {
         /** @var AccountTable $accountTable */
         $accountTable = TableRegistry::getTableLocator()->get('Account');
-        $accounts = $accountTable->find();
+        $accounts = $accountTable->find()->all();
 
         /** @var MovementTable $movementTable */
         $movementTable = TableRegistry::getTableLocator()->get('Movement');
@@ -57,9 +57,8 @@ class AccountsCleanupCommand extends Command
                 ->all()
                 ->sumOf('balance_value');
 
-            $account->set('balance_value', $value);
-
-            $account->save($account);
+            $account->balance_value = $value;
+            $accountTable->save($account);
         }
     }
 }
