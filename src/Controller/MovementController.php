@@ -63,7 +63,7 @@ class MovementController extends AuthenticatedController
         }
 
         // Add transfer if required. Swap transfer_id and account_id. Negate value.
-        if ($entity->get('transfer_id')) {
+        if ($data['transfer_id'] ?? false) {
             // Save for later
             $oldAccNowTransfer = $data['account_id'];
 
