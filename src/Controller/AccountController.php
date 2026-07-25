@@ -16,6 +16,10 @@ use eurokeep\Model\Table\AccountTable;
  */
 class AccountController extends AuthenticatedController
 {
+    public array $paginate = [
+        'limit' => 100,
+        'maxLimit' => 100
+    ];
     /**
      * Index method
      *
