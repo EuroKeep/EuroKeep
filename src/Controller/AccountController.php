@@ -149,7 +149,6 @@ class AccountController extends AuthenticatedController
 
     /**
      * @param int|null $accountId Account id.
-     * @return void
      */
     public function summarize(int|null $accountId = null): void
     {

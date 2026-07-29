@@ -7,7 +7,6 @@ use Cake\Chronos\Chronos;
 use Cake\Datasource\ResultSetInterface;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
-use eurokeep\Model\Table\CategoriesTable;
 
 /**
  * Category Entity

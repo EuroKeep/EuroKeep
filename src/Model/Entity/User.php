@@ -60,7 +60,6 @@ class User extends Entity
 
     /**
      * @param string $password
-     * @return string
      */
     protected function _setPassword(string $password): string
     {
@@ -70,7 +69,7 @@ class User extends Entity
     }
 
     /**
-     * @return array
+     * I will return the total balance of all Accounts.
      */
     final public function getTotalBalances(): array
     {

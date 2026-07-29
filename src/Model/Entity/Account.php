@@ -7,7 +7,7 @@ use eurokeep\Model\Table\AccountTable;
 use eurokeep\Model\Table\TransactionsTable;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
-use \DateTime;
+use DateTime;
 
 /**
  * Account Entity
@@ -77,6 +77,9 @@ class Account extends Entity
         $accountTable->save($this);
     }
 
+    /**
+     * Streamtransactions
+     */
     public function streamTransactions(DateTime $start, DateTime $end) : array
     {
         $transactionsTable = TableRegistry::getTableLocator()->get('Transactions');
@@ -94,6 +97,9 @@ class Account extends Entity
 
     }
 
+    /**
+     * Settlement
+     */
     public function settlement(array $transactions): array {
         $settlement = [
             'expenses' => 0,

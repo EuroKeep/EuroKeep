@@ -52,7 +52,7 @@ class Transaction extends Entity
     ];
 
     /**
-     * @return Account
+     * I will return the Account that is used on this Transaction.
      */
     final public function getAccount(): Account
     {
