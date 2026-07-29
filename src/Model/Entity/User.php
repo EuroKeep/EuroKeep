@@ -23,7 +23,7 @@ use Cake\ORM\TableRegistry;
  * @property array $settings
  *
  * @property Account[] $account
- * @property Movement[] $movement
+ * @property Transaction[] $transaction
  */
 class User extends Entity
 {
@@ -44,7 +44,7 @@ class User extends Entity
         'email' => true,
         'password' => true,
         'account' => true,
-        'movement' => true,
+        'transaction' => true,
         'role_id' => true,
         'settings' => true
     ];

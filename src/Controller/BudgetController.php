@@ -7,7 +7,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Datasource\ResultSetInterface;
 use eurokeep\Model\Entity\Budget;
 use eurokeep\Model\Table\BudgetTable;
-use eurokeep\Model\Table\MovementTable;
+use eurokeep\Model\Table\TransactionsTable;
 
 /**
  * Budget Controller
@@ -23,6 +23,7 @@ class BudgetController extends AuthenticatedController
      */
     public function index(): void
     {
+        $this->request->allowMethod(['get']);
         $budgetQuery = $this
             ->Budget
             ->find();
@@ -47,6 +48,7 @@ class BudgetController extends AuthenticatedController
      */
     public function list(): void
     {
+        $this->request->allowMethod(['get']);
         $startString = $this->request->getQueryParams()['start'] ?? null;
         $endString = $this->request->getQueryParams()['end'] ?? null;
         [$start, $end] = $this->getRange($startString, $endString);
@@ -55,7 +57,7 @@ class BudgetController extends AuthenticatedController
         $budgetQuery = $this
             ->Budget
             ->find()
-        ->contain(['Categories']);
+            ->contain(['Categories']);
         $budgets = $budgetQuery->all()->toArray();
 
         // TOTALS
@@ -67,8 +69,8 @@ class BudgetController extends AuthenticatedController
 
         /** @var Budget $budget */
         foreach ($budgets as $budget) {
-            $budget->category->movement = $budget->getMovements($start, $end);
-            $budget->spent = MovementTable::summarize($budget->category->movement);
+            $budget->category->transactions = $budget->getTransactions($start, $end);
+            $budget->spent = TransactionsTable::summarize($budget->category->transactions);
 
             $total['spentValue'] += round($budget->spent, 2);
             $total['total'] += $budget->limit;
@@ -90,15 +92,9 @@ class BudgetController extends AuthenticatedController
      */
     public function add(): void
     {
+        $this->request->allowMethod(['post']);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-
-        if (!$this->request->is('post')) {
-            $this->set('errors', [
-                'Method is not allowed'
-            ]);
-            return;
-        }
 
         $data = $this->request->getData();
         $data['user_id'] = $this->user->id;
@@ -125,6 +121,7 @@ class BudgetController extends AuthenticatedController
      */
     public function view(int|null $budgetId = null): void
     {
+        $this->request->allowMethod(['get']);
         $budget = $this->Budget->get($budgetId, [
             'contain' => [],
         ]);
@@ -143,14 +140,11 @@ class BudgetController extends AuthenticatedController
      */
     public function edit(int|null $budgetId = null): void
     {
-        $budget = $this->Budget->get($budgetId, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $budget = $this->Budget->patchEntity($budget, $this->request->getData());
-            if ($this->Budget->save($budget)) {
-                return;
-            }
+        $this->request->allowMethod(['post']);
+        $budget = $this->Budget->get($budgetId);
+        $budget = $this->Budget->patchEntity($budget, $this->request->getData());
+        if ($this->Budget->save($budget)) {
+            return;
         }
         $this->set(compact('budget'));
     }
@@ -163,7 +157,7 @@ class BudgetController extends AuthenticatedController
      */
     public function delete(int|null $budgetId = null): void
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
         $budget = $this->Budget->get($budgetId);
 
         if ($budget->user_id !== $this->user->id) {

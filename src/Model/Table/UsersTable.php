@@ -16,7 +16,7 @@ use Override;
  * User Model
  *
  * @property AccountTable&HasMany $Account
- * @property MovementTable&HasMany $Movement
+ * @property TransactionsTable&HasMany $Transaction
  *
  * @method User newEmptyEntity()
  * @method User newEntity(array $data, array $options = [])

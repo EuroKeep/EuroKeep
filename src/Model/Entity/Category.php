@@ -23,7 +23,7 @@ use eurokeep\Model\Table\CategoriesTable;
  * @property int $rght
  *
  * @property \eurokeep\Model\Entity\Budget[] $budget
- * @property \eurokeep\Model\Entity\Movement[] $movement
+ * @property \eurokeep\Model\Entity\Transaction[] $transaction
  * @property \eurokeep\Model\Entity\Subscription[] $subscription
  */
 class Category extends Entity
@@ -47,7 +47,7 @@ class Category extends Entity
         'lft' => true,
         'rght' => true,
         'budget' => true,
-        'movement' => true,
+        'transactions' => true,
         'subscription' => true,
     ];
 
@@ -67,12 +67,12 @@ class Category extends Entity
     }
 
     /**
-     * I will find all Movements for this category or for the nested child Categories.
-     * @param Chronos $start I am the start of the time range where the Movements will be searched.
-     * @param Chronos $end I am the end of the time range where the Movements will be searched.
-     * @return ResultSetInterface I am the list of Movements found in the range.
+     * I will find all Transactions for this category or for the nested child Categories.
+     * @param Chronos $start I am the start of the time range where the Transactions will be searched.
+     * @param Chronos $end I am the end of the time range where the Transactions will be searched.
+     * @return ResultSetInterface I am the list of Transactions found in the range.
      */
-    public function getMovements(Chronos $start, Chronos $end): ResultSetInterface
+    public function getTransactions(Chronos $start, Chronos $end): ResultSetInterface
     {
         $accountIds = TableRegistry::getTableLocator()
             ->get('Account')
@@ -88,17 +88,17 @@ class Category extends Entity
         $descendants[] = $this->id;
 
         return TableRegistry::getTableLocator()
-            ->get('Movement')
+            ->get('Transactions')
             ->find()
             ->where([
                 'Account.id IN' => $accountIds,
-                'Movement.category_id IN' => $descendants,
-                'Movement.created >=' => $start,
-                'Movement.created <' => $end,
-#                'Movement.balance_value <' => 0
+                'Transactions.category_id IN' => $descendants,
+                'Transactions.created >=' => $start,
+                'Transactions.created <' => $end,
+#                'Transactions.balance_value <' => 0
             ])
             ->contain(['Account', 'Categories'])
-            ->orderBy(['Movement.created' => 'DESC'])
+            ->orderBy(['Transactions.created' => 'DESC'])
             ->all();
     }
 }

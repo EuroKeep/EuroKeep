@@ -76,7 +76,7 @@ class Subscription extends Entity
     }
 
     /**
-     * I will validate whether the Subscription can be used for forecasting movements.
+     * I will validate whether the Subscription can be used for forecasting transactions.
      */
     public function isEligibleForForecast(): bool
     {
@@ -98,7 +98,7 @@ class Subscription extends Entity
             return [];
         }
 
-        // If the subscription ends before $end, use that instead to not show obsolete movements.
+        // If the subscription ends before $end, use that instead to not show obsolete transactions.
         if ($this->end && $this->end->getTimestamp() < $end->getTimestamp()) {
             $end = new Chronos($this->end->getTimestamp());
         }
@@ -111,7 +111,7 @@ class Subscription extends Entity
         $now = Chronos::now();
         $results = [];
         while ($current < $end) {
-            // Only show future movements.
+            // Only show future transactions.
             if ($current > $now) {
                 $myInterval = clone $this;
                 $myInterval->execution = $current->format('Y-m-' . $this->start->format('d'));

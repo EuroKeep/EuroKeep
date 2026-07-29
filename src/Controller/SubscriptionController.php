@@ -22,7 +22,7 @@ class SubscriptionController extends AuthenticatedController
         'limit' => 100,
         'maxLimit' => 100,
         'order' => [
-            'Movement.created' => 'desc'
+            'Transactions.created' => 'desc'
         ]
     ];
 
@@ -31,6 +31,7 @@ class SubscriptionController extends AuthenticatedController
      */
     public function index(): void
     {
+        $this->request->allowMethod(['get']);
         $qry = $this->Subscription->find()
             ->contain(['Categories']);
 
@@ -56,6 +57,7 @@ class SubscriptionController extends AuthenticatedController
      */
     public function view(int|null $subscriptionId = null): void
     {
+        $this->request->allowMethod(['get']);
         $subscription = $this->Subscription->get($subscriptionId, [
             'contain' => [],
         ]);
@@ -71,15 +73,9 @@ class SubscriptionController extends AuthenticatedController
      */
     public function add(): void
     {
+        $this->request->allowMethod(['post']);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-
-        if (!$this->request->is('post')) {
-            $this->set('errors', [
-                'Method is not allowed'
-            ]);
-            return;
-        }
 
         $data = $this->request->getData();
         $data['user_id'] = $this->user->id;
@@ -106,22 +102,21 @@ class SubscriptionController extends AuthenticatedController
      */
     public function edit(int|null $subscriptionId = null): void
     {
+        $this->request->allowMethod(['post']);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
 
         $entity = $this->Subscription->get($subscriptionId);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $entity = $this->Subscription->patchEntity($entity, $this->request->getData());
+        $entity = $this->Subscription->patchEntity($entity, $this->request->getData());
 
-            if ($entity->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $entity->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            }
-            if (!$this->Subscription->save($entity)) {
-                $this->set('success', false);
-            }
+        if ($entity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $entity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+        if (!$this->Subscription->save($entity)) {
+            $this->set('success', false);
         }
         $this->set('subscription', $entity);
         $this->viewBuilder()->setOption('serialize', ['success', 'subscription']);
@@ -135,7 +130,7 @@ class SubscriptionController extends AuthenticatedController
      */
     public function delete(int|null $subscriptionId = null): void
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
         $subscription = $this->Subscription->get($subscriptionId);
         if (!$this->Subscription->delete($subscription)) {
             $this->addError('Subscription not deleted');
@@ -143,11 +138,12 @@ class SubscriptionController extends AuthenticatedController
     }
 
     /**
-     * I will forecast the movements of the given $subscriptionId for the next twelve months ahead.
+     * I will forecast the transactions of the given $subscriptionId for the next twelve months ahead.
      * @param int|null $subscriptionId I am the ID of the subscription you want to forecast.
      */
     public function forecast(int|null $subscriptionId = null): void
     {
+        $this->request->allowMethod(['get']);
         // Find subscription(s)
         if ($subscriptionId) {
             $subscriptions = [$this->Subscription->get($subscriptionId)];

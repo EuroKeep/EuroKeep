@@ -12,7 +12,7 @@ use Cake\Validation\Validator;
  * Categories Model
  *
  * @property \eurokeep\Model\Table\BudgetTable&\Cake\ORM\Association\HasMany $Budget
- * @property \eurokeep\Model\Table\MovementTable&\Cake\ORM\Association\HasMany $Movement
+ * @property \eurokeep\Model\Table\TransactionsTable&\Cake\ORM\Association\HasMany $Transaction
  * @property \eurokeep\Model\Table\SubscriptionTable&\Cake\ORM\Association\HasMany $Subscription
  *
  * @method \eurokeep\Model\Entity\Category newEmptyEntity()
@@ -62,7 +62,7 @@ class CategoriesTable extends Table
             'className' => 'Categories',
             'foreignKey' => 'parent_id',
         ]);
-        $this->hasMany('Movement', [
+        $this->hasMany('Transactions', [
             'foreignKey' => 'category_id',
         ]);
         $this->hasMany('Subscription', [

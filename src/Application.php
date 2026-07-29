@@ -26,6 +26,7 @@ use Cake\Datasource\FactoryLocator;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
+use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
@@ -87,33 +88,13 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     {
         $middlewareQueue
             ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this))
-            ->add(new AssetMiddleware([]))
             ->add(new RoutingMiddleware($this))
             ->add(new BodyParserMiddleware())
 
             ->add(new AuthenticationMiddleware($this))
-/*
-            // Cross Site Request Forgery (CSRF) Protection Middleware
-            // https://book.cakephp.org/4/en/security/csrf.html#cross-site-request-forgery-csrf-middleware
-            ->add(new CsrfProtectionMiddleware([
-                'httponly' => true,
-            ]))
-
-*/
+#            ->add(new CsrfProtectionMiddleware())
         ;
         return $middlewareQueue;
-    }
-
-    /**
-     * Register application container services.
-     *
-     * @param ContainerInterface $container The Container to update.
-     * @return void
-     * @link https://book.cakephp.org/4/en/development/dependency-injection.html#dependency-injection
-     */
-    #[Override]
-    public function services(ContainerInterface $container): void
-    {
     }
 
     /**
@@ -128,8 +109,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $this->addOptionalPlugin('Bake');
 
         $this->addPlugin('Migrations');
-
-        // Load more plugins here
     }
 
     #[Override]
