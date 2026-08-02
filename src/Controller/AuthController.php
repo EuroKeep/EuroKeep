@@ -32,6 +32,7 @@ class AuthController extends AppController
      * I handle the login.
      */
     public function login(): void {
+        $this->request->allowMethod(['post']);
         $result = $this->Authentication->getResult();
 
         $errors = [];

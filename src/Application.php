@@ -14,6 +14,7 @@ declare(strict_types=1);
  * @since     3.3.0
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace eurokeep;
 
 use Authentication\AuthenticationService;
@@ -21,14 +22,12 @@ use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Core\Configure;
-use Cake\Core\ContainerInterface;
 use Cake\Datasource\FactoryLocator;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
-use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\Router;
 use Override;
@@ -45,7 +44,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     /**
      * Load all the application configuration and bootstrap logic.
      *
-     * @return void
      */
     #[Override]
     public function bootstrap(): void
@@ -87,51 +85,28 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     {
         $middlewareQueue
             ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this))
-            ->add(new AssetMiddleware([]))
             ->add(new RoutingMiddleware($this))
             ->add(new BodyParserMiddleware())
-
-            ->add(new AuthenticationMiddleware($this))
-/*
-            // Cross Site Request Forgery (CSRF) Protection Middleware
-            // https://book.cakephp.org/4/en/security/csrf.html#cross-site-request-forgery-csrf-middleware
-            ->add(new CsrfProtectionMiddleware([
-                'httponly' => true,
-            ]))
-
-*/
+            ->add(new AuthenticationMiddleware($this))#            ->add(new CsrfProtectionMiddleware())
         ;
         return $middlewareQueue;
-    }
-
-    /**
-     * Register application container services.
-     *
-     * @param ContainerInterface $container The Container to update.
-     * @return void
-     * @link https://book.cakephp.org/4/en/development/dependency-injection.html#dependency-injection
-     */
-    #[Override]
-    public function services(ContainerInterface $container): void
-    {
     }
 
     /**
      * Bootstrapping for CLI application.
      *
      * That is when running commands.
-     *
-     * @return void
      */
     protected function bootstrapCli(): void
     {
         $this->addOptionalPlugin('Bake');
 
         $this->addPlugin('Migrations');
-
-        // Load more plugins here
     }
 
+    /**
+     * I will return the AuthenticationService for the application.
+     */
     #[Override]
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {

@@ -14,17 +14,16 @@ class CategoriesController extends AppController
         'limit' => 100,
         'maxLimit' => 100,
         'order' => [
-            'Movement.created' => 'desc'
+            'Transactions.created' => 'desc'
         ]
     ];
 
     /**
      * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
      */
     public function index(): void
     {
+        $this->request->allowMethod(['get']);
         $this->Categories->recover();
         $categoriesQuery = $this
             ->Categories
@@ -39,15 +38,13 @@ class CategoriesController extends AppController
 
     /**
      * View method
-     *
-     * @param string|null $id Category id.
-     * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
     {
+        $this->request->allowMethod(['get']);
         $this->Categories->recover();
-        $category = $this->Categories->get($id, contain: ['Budget', 'Movement', 'Subscription']);
+        $category = $this->Categories->get($id, contain: ['Budget', 'Transactions', 'Subscription']);
         $this->set(compact('category'));
     }
 
@@ -58,16 +55,15 @@ class CategoriesController extends AppController
      */
     public function add()
     {
+        $this->request->allowMethod(['post']);
         $category = $this->Categories->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $category = $this->Categories->patchEntity($category, $this->request->getData());
-            if ($this->Categories->save($category)) {
-                $this->Flash->success(__('The category has been saved.'));
+        $category = $this->Categories->patchEntity($category, $this->request->getData());
+        if ($this->Categories->save($category)) {
+            $this->Flash->success(__('The category has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The category could not be saved. Please, try again.'));
+            return $this->redirect(['action' => 'index']);
         }
+        $this->Flash->error(__('The category could not be saved. Please, try again.'));
         $this->set(compact('category'));
     }
 
@@ -75,21 +71,19 @@ class CategoriesController extends AppController
      * Edit method
      *
      * @param string|null $id Category id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function edit($id = null)
     {
+        $this->request->allowMethod(['post']);
         $category = $this->Categories->get($id, contain: []);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $category = $this->Categories->patchEntity($category, $this->request->getData());
-            if ($this->Categories->save($category)) {
-                $this->Flash->success(__('The category has been saved.'));
+        $category = $this->Categories->patchEntity($category, $this->request->getData());
+        if ($this->Categories->save($category)) {
+            $this->Flash->success(__('The category has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The category could not be saved. Please, try again.'));
+            return $this->redirect(['action' => 'index']);
         }
+        $this->Flash->error(__('The category could not be saved. Please, try again.'));
         $this->set(compact('category'));
     }
 
@@ -97,7 +91,6 @@ class CategoriesController extends AppController
      * Delete method
      *
      * @param string|null $id Category id.
-     * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null)
@@ -112,6 +105,10 @@ class CategoriesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    /**
+     * Tree function
+     */
     public function tree()
     {
         $categories = $this->Categories

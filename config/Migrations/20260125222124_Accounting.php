@@ -178,9 +178,9 @@ class Accounting extends AbstractMigration
                 ->create();
         }
 
-        // Movement
-        if (!$this->hasTable('movement')) {
-            $this->table('movement')
+        // Transaction
+        if (!$this->hasTable('transactions')) {
+            $this->table('transactions')
                 ->addColumn('id', 'integer', [
                     'autoIncrement' => true,
                     'default'       => null,

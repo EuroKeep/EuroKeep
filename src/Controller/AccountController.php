@@ -26,6 +26,7 @@ class AccountController extends AuthenticatedController
      */
     public function index(): void
     {
+        $this->request->allowMethod(['get']);
         $accountQuery = $this
             ->Account
             ->find()
@@ -49,15 +50,9 @@ class AccountController extends AuthenticatedController
      */
     public function add(): void
     {
+        $this->request->allowMethod(['post']);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-
-        if (!$this->request->is('post')) {
-            $this->set('errors', [
-                'Method is not allowed'
-            ]);
-            return;
-        }
 
         // Fetch data
         $account = $this->request->getData();
@@ -88,6 +83,7 @@ class AccountController extends AuthenticatedController
      */
     public function view(int|null $accountId = null): void
     {
+        $this->request->allowMethod(['get']);
         $account = $this->Account->get($accountId, [
             'contain' => [],
         ]);
@@ -106,10 +102,7 @@ class AccountController extends AuthenticatedController
      */
     public function edit(int|null $accountId = null): void
     {
-        // Check method
-        if (! $this->request->is(['patch', 'post', 'put'])) {
-            $this->http401('method not allowed');
-        }
+        $this->request->allowMethod(['post']);
 
         $account = $this->Account->get($accountId);
 
@@ -146,7 +139,7 @@ class AccountController extends AuthenticatedController
      */
     public function delete(int|null $accountId = null): void
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
         $account = $this->Account->get($accountId);
 
         if (!$this->Account->delete($account)) {
@@ -156,10 +149,10 @@ class AccountController extends AuthenticatedController
 
     /**
      * @param int|null $accountId Account id.
-     * @return void
      */
     public function summarize(int|null $accountId = null): void
     {
+        $this->request->allowMethod(['get']);
         if ($accountId) {
             $accounts = [$this->Account->find()->where(['id' => $accountId])->first()];
         } else {

@@ -76,7 +76,7 @@ class UserDeleteCommand extends Command
         }
         $usersTable->delete($user);
 
-        $io->out("The user #{$user['id']}, {$user['email']} has been deleted, including all accounts, movements, etc.");
+        $io->out("The user #{$user['id']}, {$user['email']} has been deleted, including all accounts, transactions, etc.");
         $io->out("That's all, folks.");
     }
 }

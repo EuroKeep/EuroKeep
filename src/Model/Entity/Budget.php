@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace eurokeep\Model\Entity;
 
+use Cake\Chronos\Chronos;
 use Cake\Datasource\ResultSetInterface;
 use Cake\I18n\FrozenTime;
-use eurokeep\Model\Table\CategoriesTable;
-use Cake\Chronos\Chronos;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
+use eurokeep\Model\Table\CategoriesTable;
 
 /**
  * Budget Entity
@@ -23,7 +23,7 @@ use Cake\ORM\TableRegistry;
  * @property int $user_id
  * @property string $currency
  *
- * @property \eurokeep\Model\Entity\Category $category
+ * @property Category $category
  */
 class Budget extends Entity
 {
@@ -49,17 +49,18 @@ class Budget extends Entity
     ];
 
     /**
-     * I will find those movements of the current Budget's Category (and their Children) that took place between $start and $end
-     * @param Chronos $start I am the start of the time range to watch for movements that match the Budget's criteria.
-     * @param Chronos $end I am the end of the time range to watch for movements that match the Budget's criteria.
+     * I will find those transactions of the current Budget's Category (and their Children) that took place between $start and $end
+     * @param Chronos $start I am the start of the time range to watch for transactions that match the Budget's criteria.
+     * @param Chronos $end I am the end of the time range to watch for transactions that match the Budget's criteria.
      */
-    public function getMovements(Chronos $start, Chronos $end) : ResultSetInterface {
-        $movementTable = TableRegistry::getTableLocator()->get('Movement');
+    public function getTransactions(Chronos $start, Chronos $end): ResultSetInterface
+    {
+        $transactionTable = TableRegistry::getTableLocator()->get('Transactions');
 
         /** @var CategoriesTable $categoriesTable */
-        $categoriesTable = $movementTable->Categories;
+        $categoriesTable = $transactionTable->Categories;
         $category = $categoriesTable->get($this->category_id);
 
-        return $category->getMovements($start, $end);
+        return $category->getTransactions($start, $end, $this->currency);
     }
 }

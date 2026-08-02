@@ -22,6 +22,7 @@ class AccounttypeController extends AuthenticatedController
      */
     public function index() :void
     {
+        $this->request->allowMethod(['get']);
         $accounttypes = $this->paginate($this->Accounttype);
 
         $this->set(compact('accounttypes'));
@@ -38,6 +39,7 @@ class AccounttypeController extends AuthenticatedController
      */
     public function view(int | null $accountTypeId = null): void
     {
+        $this->request->allowMethod(['get']);
         $accounttype = $this->Accounttype->get($accountTypeId, [
             'contain' => [],
         ]);
@@ -52,15 +54,9 @@ class AccounttypeController extends AuthenticatedController
      */
     public function add(): void
     {
+        $this->request->allowMethod(['post']);
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
-
-        if (!$this->request->is('post')) {
-            $this->set('errors', [
-                'Method is not allowed'
-            ]);
-            return;
-        }
 
         // Fetch data
         $account = $this->request->getData();
@@ -89,10 +85,7 @@ class AccounttypeController extends AuthenticatedController
      */
     public function edit(int|null $accountTypeId = null): void
     {
-        // Check method
-        if (! $this->request->is(['patch', 'post', 'put'])) {
-            $this->http401('method not allowed');
-        }
+        $this->request->allowMethod(['post']);
 
         $accounttype = $this->Accounttype->get($accountTypeId);
 
@@ -124,7 +117,7 @@ class AccounttypeController extends AuthenticatedController
      */
     public function delete(int|null $accountTypeId = null): void
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
         $accountType = $this->Accounttype->get($accountTypeId);
 
         if (!$this->Accounttype->delete($accountType)) {

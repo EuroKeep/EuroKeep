@@ -20,7 +20,7 @@ use Psr\SimpleCache\CacheInterface;
  * Account Model
  *
  * @property UsersTable&BelongsTo $Users
- * @property MovementTable&HasMany $Movement
+ * @property TransactionsTable&HasMany $Transaction
  *
  * @method Account newEmptyEntity()
  * @method Account newEntity(array $data, array $options = [])
@@ -61,7 +61,7 @@ class AccountTable extends OwnedTable
             'foreignKey' => 'accounttype_id',
         ]);
 
-        $this->hasMany('Movement', [
+        $this->hasMany('Transactions', [
             'foreignKey' => 'account_id',
             'dependent' => true,
             'cascadeCallbacks' => true,

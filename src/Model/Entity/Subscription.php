@@ -7,6 +7,8 @@ use Cake\Chronos\Chronos;
 use Cake\I18n\FrozenDate;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
+use \DateInterval;
+
 
 /**
  * Subscription Entity
@@ -58,9 +60,9 @@ class Subscription extends Entity
 
     /**
      * I will parse the given $interval from the database
-     * @return \DateInterval|null I am the \DateInterval Object that represents the actual Interval. If not possible, I am null.
+     * @return DateInterval|null I am the DateInterval Object that represents the actual Interval. If not possible, I am null.
      */
-    public function getInterval(): \DateInterval|null
+    public function getInterval(): DateInterval|null
     {
         if (!preg_match('/^(\d+)([MYD])$/', $this->interval, $matches)) {
             return null;
@@ -69,14 +71,14 @@ class Subscription extends Entity
         $value = (int)$matches[1];
         $unit = $matches[2];
         return match ($unit) {
-            'M' => new \DateInterval("P{$value}M"),
-            'Y' => new \DateInterval("P{$value}Y"),
-            'D' => new \DateInterval("P{$value}D"),
+            'M' => new DateInterval("P{$value}M"),
+            'Y' => new DateInterval("P{$value}Y"),
+            'D' => new DateInterval("P{$value}D"),
         };
     }
 
     /**
-     * I will validate whether the Subscription can be used for forecasting movements.
+     * I will validate whether the Subscription can be used for forecasting transactions.
      */
     public function isEligibleForForecast(): bool
     {
@@ -98,7 +100,7 @@ class Subscription extends Entity
             return [];
         }
 
-        // If the subscription ends before $end, use that instead to not show obsolete movements.
+        // If the subscription ends before $end, use that instead to not show obsolete transactions.
         if ($this->end && $this->end->getTimestamp() < $end->getTimestamp()) {
             $end = new Chronos($this->end->getTimestamp());
         }
@@ -111,7 +113,7 @@ class Subscription extends Entity
         $now = Chronos::now();
         $results = [];
         while ($current < $end) {
-            // Only show future movements.
+            // Only show future transactions.
             if ($current > $now) {
                 $myInterval = clone $this;
                 $myInterval->execution = $current->format('Y-m-' . $this->start->format('d'));
