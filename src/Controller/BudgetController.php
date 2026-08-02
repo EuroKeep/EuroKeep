@@ -49,10 +49,7 @@ class BudgetController extends AuthenticatedController
     public function list(): void
     {
         $this->request->allowMethod(['get']);
-        $startString = $this->request->getQueryParams()['start'] ?? null;
-        $endString = $this->request->getQueryParams()['end'] ?? null;
-        [$start, $end] = $this->getRange($startString, $endString);
-
+        [$start, $end] = $this->getRange();
 
         $budgetQuery = $this
             ->Budget

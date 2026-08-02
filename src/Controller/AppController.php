@@ -18,11 +18,11 @@ declare(strict_types=1);
 namespace eurokeep\Controller;
 
 use Cake\Chronos\Chronos;
-use Cake\I18n\DateTime;
-use Override;
 use Cake\Controller\Controller;
 use Cake\Event\EventInterface;
+use Cake\I18n\DateTime;
 use Cake\View\JsonView;
+use Override;
 
 /**
  * Application Controller
@@ -105,14 +105,14 @@ class AppController extends Controller
     }
 
     /**
-     * @param string|null $startString I am the start of the Range you want.
-     * @param string|null $endString I am the end of the range you want.
      * @return Chronos[]                   I return the real start and end normalized to server time.
      */
-    protected function getRange(string|null $startString = null, string|null $endString = null): array
+    protected function getRange(): array
     {
-        $startObject = (new DateTime())->modify('first day of this month');
-        $endObject = (new DateTime())->modify('first day of next month');
+        $startString = $this->request->getQueryParams()['start'] ?? 'first day of this month';
+        $endString = $this->request->getQueryParams()['end'] ?? 'first day of next month';
+        $startObject = (new DateTime())->modify($startString);
+        $endObject = (new DateTime())->modify($endString);
 
         if ($startString && $endString) {
             $startObject = new DateTime($startString);
@@ -137,7 +137,7 @@ class AppController extends Controller
      */
     protected function getAnnualRange(string|null $startString = null, string|null $endString = null): array
     {
-        [$start, $end] = $this->getRange($startString, $endString);
+        [$start, $end] = $this->getRange();
 
         $start->modify('first day of this year');
         $end->modify('last day of this year');
